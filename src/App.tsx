@@ -3,11 +3,17 @@ import styled from "styled-components";
 
 import CheckInForm from "./components/CheckInForm";
 import CompanionReplyPreview from "./components/CompanionReplyPreview";
+import HistoryList from "./components/HistoryList";
 import StatePreview from "./components/StatePreview";
 import TreeTextInput from "./components/TreeTextInput";
 import type { ContextTag, DerivedUserState, MoodTag } from "./features/checkIn/checkInTypes";
 import { deriveUserState } from "./features/checkIn/deriveUserState";
-import { saveCheckInRecord } from "./features/history/historyStorage";
+import {
+  clearCheckInHistory,
+  loadCheckInHistory,
+  saveCheckInRecord
+} from "./features/history/historyStorage";
+import type { CheckInHistoryRecord } from "./features/history/historyTypes";
 import type { PetState } from "./features/pet/petTypes";
 import { calculatePetState } from "./features/pet/petStateEngine";
 import { generateCompanionReply } from "./features/reply/companionReplyEngine";
@@ -26,6 +32,9 @@ function App() {
   const [selectedContextTags, setSelectedContextTags] = useState<ContextTag[]>([]);
   const [shortText, setShortText] = useState("");
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
+  const [historyRecords, setHistoryRecords] = useState<CheckInHistoryRecord[]>(() =>
+    loadCheckInHistory()
+  );
 
   const handleContextToggle = (contextTag: ContextTag) => {
     setSelectedContextTags((currentTags) =>
@@ -46,7 +55,7 @@ function App() {
     const companionReply = generateCompanionReply(input);
     const createdAt = new Date().toISOString();
 
-    saveCheckInRecord({
+    const records = saveCheckInRecord({
       moodTag: input.moodTag,
       contextTags: input.contextTags,
       shortText: input.shortText,
@@ -55,6 +64,7 @@ function App() {
       companionReply,
       createdAt
     });
+    setHistoryRecords(records);
 
     setPreviewState({
       ...input,
@@ -62,6 +72,11 @@ function App() {
       petState,
       companionReply
     });
+  };
+
+  const handleClearHistory = () => {
+    clearCheckInHistory();
+    setHistoryRecords([]);
   };
 
   return (
@@ -80,6 +95,7 @@ function App() {
       />
       <StatePreview previewState={previewState} />
       <CompanionReplyPreview reply={previewState?.companionReply ?? null} />
+      <HistoryList records={historyRecords} onClear={handleClearHistory} />
     </PageShell>
   );
 }
