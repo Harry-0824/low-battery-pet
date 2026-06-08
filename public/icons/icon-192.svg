@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Low Battery Pet icon">
+  <rect width="192" height="192" rx="42" fill="#f0d66f" />
+  <rect x="34" y="40" width="124" height="92" rx="18" fill="#243142" />
+  <rect x="48" y="54" width="96" height="64" rx="10" fill="#dbe7c9" />
+  <circle cx="76" cy="84" r="7" fill="#243142" />
+  <circle cx="116" cy="84" r="7" fill="#243142" />
+  <path d="M74 102c12 10 32 10 44 0" fill="none" stroke="#243142" stroke-width="8" stroke-linecap="round" />
+  <rect x="61" y="143" width="70" height="16" rx="8" fill="#243142" />
+  <rect x="134" y="67" width="16" height="36" rx="5" fill="#f0d66f" />
+</svg>
