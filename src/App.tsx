@@ -4,6 +4,7 @@ import styled from "styled-components";
 import CheckInForm from "./components/CheckInForm";
 import CompanionReplyPreview from "./components/CompanionReplyPreview";
 import HistoryList from "./components/HistoryList";
+import RetroDeviceFrame from "./components/RetroDeviceFrame";
 import StatePreview from "./components/StatePreview";
 import TreeTextInput from "./components/TreeTextInput";
 import type { ContextTag, DerivedUserState, MoodTag } from "./features/checkIn/checkInTypes";
@@ -81,29 +82,31 @@ function App() {
 
   return (
     <PageShell>
-      <Header>
-        <h1>Low Battery Pet</h1>
-        <p>選一個現在的狀態，預覽小寵物會怎麼反應。</p>
-      </Header>
-      <TreeTextInput value={shortText} onChange={setShortText} />
-      <CheckInForm
-        selectedMoodTag={selectedMoodTag}
-        selectedContextTags={selectedContextTags}
-        onMoodSelect={setSelectedMoodTag}
-        onContextToggle={handleContextToggle}
-        onSubmit={handleSubmit}
-      />
-      <StatePreview previewState={previewState} />
-      <CompanionReplyPreview reply={previewState?.companionReply ?? null} />
-      <HistoryList records={historyRecords} onClear={handleClearHistory} />
+      <RetroDeviceFrame>
+        <Header>
+          <h1>Low Battery Pet</h1>
+          <p>選一個現在的狀態，預覽小寵物會怎麼反應。</p>
+        </Header>
+        <TreeTextInput value={shortText} onChange={setShortText} />
+        <CheckInForm
+          selectedMoodTag={selectedMoodTag}
+          selectedContextTags={selectedContextTags}
+          onMoodSelect={setSelectedMoodTag}
+          onContextToggle={handleContextToggle}
+          onSubmit={handleSubmit}
+        />
+        <StatePreview previewState={previewState} />
+        <CompanionReplyPreview reply={previewState?.companionReply ?? null} />
+        <HistoryList records={historyRecords} onClear={handleClearHistory} />
+      </RetroDeviceFrame>
     </PageShell>
   );
 }
 
 const PageShell = styled.main`
-  width: min(100%, 760px);
+  width: min(100%, 560px);
   margin: 0 auto;
-  padding: 32px 18px 48px;
+  padding: 24px 14px 48px;
 `;
 
 const Header = styled.header`

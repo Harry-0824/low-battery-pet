@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
 import { saveCheckInRecord } from "./features/history/historyStorage";
@@ -42,6 +42,17 @@ afterEach(() => {
 });
 
 describe("App", () => {
+  it("renders existing app content inside the retro device screen", () => {
+    render(<App />);
+
+    const deviceScreen = screen.getByTestId("retro-device-screen");
+
+    expect(screen.getByText("LOW BATTERY PET")).toBeTruthy();
+    expect(within(deviceScreen).getByText("Low Battery Pet")).toBeTruthy();
+    expect(within(deviceScreen).getByLabelText("Optional check-in note")).toBeTruthy();
+    expect(within(deviceScreen).getByText("Check-in history")).toBeTruthy();
+  });
+
   it("renders mood options", () => {
     render(<App />);
 
