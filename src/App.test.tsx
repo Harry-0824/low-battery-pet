@@ -58,4 +58,25 @@ describe("App", () => {
     expect(screen.getByText("mood: low_power")).toBeTruthy();
     expect(screen.getByText("effect: low_battery")).toBeTruthy();
   });
+
+  it("accepts optional text and displays a companion reply preview", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Optional check-in note"), {
+      target: { value: "Need a small plan" }
+    });
+    const buttons = screen.getAllByRole("button");
+    fireEvent.click(buttons[3]);
+    fireEvent.click(buttons[9]);
+    fireEvent.click(screen.getByRole("button", { name: "Preview state" }));
+
+    expect(screen.getByText("Tone: warm")).toBeTruthy();
+    expect(screen.getByText("Pet line: I will keep the little light on beside you.")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "Tiny action: Set a 10 minute no-output rest block and put the phone face down."
+      )
+    ).toBeTruthy();
+    expect(screen.getByText("Note: Need a small plan")).toBeTruthy();
+  });
 });
