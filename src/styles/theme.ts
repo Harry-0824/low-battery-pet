@@ -1,6 +1,8 @@
 export const theme = {
   colors: {
-    background: "#f7f8fb",
+    background: "#dbe7c9",
+    device: "#f0d66f",
+    deviceShadow: "#caa442",
     text: "#1f2937"
   }
 } as const;

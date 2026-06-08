@@ -14,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #f7f8fb;
+    background: #dbe7c9;
     color: #1f2937;
   }
 `;
