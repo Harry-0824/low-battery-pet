@@ -1,6 +1,41 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import App from "./App";
+import { saveCheckInRecord } from "./features/history/historyStorage";
+import type { CheckInHistoryRecord } from "./features/history/historyTypes";
+
+const createHistoryRecord = (createdAt: string): CheckInHistoryRecord => ({
+  moodTag: "lonely",
+  contextTags: ["want_to_rest"],
+  shortText: "Need a small plan",
+  derivedUserState: {
+    mood: "lonely",
+    energyLevel: "low",
+    stressLevel: "medium",
+    needsComfort: true,
+    hasWalletPressure: false,
+    needsRest: true,
+    needsFoodSuggestion: false
+  },
+  petState: {
+    mood: "lonely",
+    animation: "hide",
+    effect: "rain",
+    accessory: "none"
+  },
+  companionReply: {
+    reply: "Lonely evenings feel heavier. I am here, and you do not have to perform.",
+    petLine: "I will keep the little light on beside you.",
+    tinyAction: "Set a 10 minute no-output rest block and put the phone face down.",
+    tone: "warm",
+    note: "Need a small plan"
+  },
+  createdAt
+});
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 afterEach(() => {
   cleanup();
@@ -78,5 +113,44 @@ describe("App", () => {
       )
     ).toBeTruthy();
     expect(screen.getByText("Note: Need a small plan")).toBeTruthy();
+  });
+
+  it("shows an empty history state when no records exist", () => {
+    render(<App />);
+
+    expect(screen.getByText("Check-in history")).toBeTruthy();
+    expect(screen.getByText("No saved check-ins yet.")).toBeTruthy();
+  });
+
+  it("loads saved history records newest first", () => {
+    saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
+    saveCheckInRecord(createHistoryRecord("2026-06-08T11:00:00.000Z"));
+
+    render(<App />);
+
+    const historyCards = screen.getAllByTestId("history-card");
+    expect(historyCards[0].textContent).toContain("2026-06-08T11:00:00.000Z");
+    expect(historyCards[0].textContent).toContain("moodTag: lonely");
+    expect(historyCards[0].textContent).toContain("contexts: want_to_rest");
+    expect(historyCards[0].textContent).toContain("pet: lonely / rain");
+    expect(historyCards[0].textContent).toContain("reply: Lonely evenings feel heavier.");
+  });
+
+  it("clears saved history and updates the visible history state", () => {
+    saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear history" }));
+
+    expect(screen.queryByTestId("history-card")).toBeNull();
+    expect(screen.getByText("No saved check-ins yet.")).toBeTruthy();
+  });
+
+  it("adds a submitted check-in to the visible history list", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Preview state" }));
+
+    expect(screen.getByTestId("history-card").textContent).toContain("moodTag: okay");
   });
 });
