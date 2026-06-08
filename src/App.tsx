@@ -2,22 +2,28 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import CheckInForm from "./components/CheckInForm";
+import CompanionReplyPreview from "./components/CompanionReplyPreview";
 import StatePreview from "./components/StatePreview";
+import TreeTextInput from "./components/TreeTextInput";
 import type { ContextTag, DerivedUserState, MoodTag } from "./features/checkIn/checkInTypes";
 import { deriveUserState } from "./features/checkIn/deriveUserState";
 import type { PetState } from "./features/pet/petTypes";
 import { calculatePetState } from "./features/pet/petStateEngine";
+import { generateCompanionReply } from "./features/reply/companionReplyEngine";
+import type { CompanionReply } from "./features/reply/replyTypes";
 
 interface PreviewState {
   moodTag: MoodTag;
   contextTags: ContextTag[];
   derivedUserState: DerivedUserState;
   petState: PetState;
+  companionReply: CompanionReply;
 }
 
 function App() {
   const [selectedMoodTag, setSelectedMoodTag] = useState<MoodTag>("okay");
   const [selectedContextTags, setSelectedContextTags] = useState<ContextTag[]>([]);
+  const [shortText, setShortText] = useState("");
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
 
   const handleContextToggle = (contextTag: ContextTag) => {
@@ -31,15 +37,18 @@ function App() {
   const handleSubmit = () => {
     const input = {
       moodTag: selectedMoodTag,
-      contextTags: selectedContextTags
+      contextTags: selectedContextTags,
+      shortText
     };
     const derivedUserState = deriveUserState(input);
     const petState = calculatePetState(derivedUserState);
+    const companionReply = generateCompanionReply(input);
 
     setPreviewState({
       ...input,
       derivedUserState,
-      petState
+      petState,
+      companionReply
     });
   };
 
@@ -49,6 +58,7 @@ function App() {
         <h1>Low Battery Pet</h1>
         <p>選一個現在的狀態，預覽小寵物會怎麼反應。</p>
       </Header>
+      <TreeTextInput value={shortText} onChange={setShortText} />
       <CheckInForm
         selectedMoodTag={selectedMoodTag}
         selectedContextTags={selectedContextTags}
@@ -57,6 +67,7 @@ function App() {
         onSubmit={handleSubmit}
       />
       <StatePreview previewState={previewState} />
+      <CompanionReplyPreview reply={previewState?.companionReply ?? null} />
     </PageShell>
   );
 }
