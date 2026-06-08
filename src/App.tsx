@@ -7,6 +7,7 @@ import StatePreview from "./components/StatePreview";
 import TreeTextInput from "./components/TreeTextInput";
 import type { ContextTag, DerivedUserState, MoodTag } from "./features/checkIn/checkInTypes";
 import { deriveUserState } from "./features/checkIn/deriveUserState";
+import { saveCheckInRecord } from "./features/history/historyStorage";
 import type { PetState } from "./features/pet/petTypes";
 import { calculatePetState } from "./features/pet/petStateEngine";
 import { generateCompanionReply } from "./features/reply/companionReplyEngine";
@@ -43,6 +44,17 @@ function App() {
     const derivedUserState = deriveUserState(input);
     const petState = calculatePetState(derivedUserState);
     const companionReply = generateCompanionReply(input);
+    const createdAt = new Date().toISOString();
+
+    saveCheckInRecord({
+      moodTag: input.moodTag,
+      contextTags: input.contextTags,
+      shortText: input.shortText,
+      derivedUserState,
+      petState,
+      companionReply,
+      createdAt
+    });
 
     setPreviewState({
       ...input,
