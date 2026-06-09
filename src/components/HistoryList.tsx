@@ -18,7 +18,7 @@ function HistoryList({ records, onClear }: HistoryListProps) {
         <h2>最近被接住的時候</h2>
         {records.length > 0 ? (
           <ClearButton type="button" onClick={onClear}>
-            清空紀錄
+            放下這些紀錄
           </ClearButton>
         ) : null}
       </HistoryHeader>
@@ -56,14 +56,18 @@ const HistoryHeader = styled.div`
 
 const ClearButton = styled.button`
   min-height: 40px;
-  border: 1px solid #d7dde6;
+  border: 1px solid #fca5a5;
   border-radius: 8px;
   padding: 8px 12px;
-  background: #ffffff;
-  color: #243142;
+  background: #fee2e2;
+  color: #991b1b;
   cursor: pointer;
   font: inherit;
   font-weight: 800;
+
+  &:hover {
+    background: #fecaca;
+  }
 `;
 
 const CardList = styled.div`
