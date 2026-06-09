@@ -1,6 +1,5 @@
-import styled from "styled-components";
-
 import type { PetState } from "../features/pet/petTypes";
+import { Display, PetFace, StatusText } from "./PetDisplay.styles";
 
 interface PetDisplayProps {
   petState: PetState;
@@ -70,32 +69,5 @@ export const getPetDisplay = (petState: PetState): PetDisplayCopy => {
     status: "小電量獸待機中"
   };
 };
-
-const Display = styled.div`
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  border: 1px solid #d7dde6;
-  border-radius: 8px;
-  padding: 18px;
-  background: #f2f5f8;
-  text-align: center;
-`;
-
-const PetFace = styled.pre`
-  margin: 0;
-  color: #243142;
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 2rem;
-  line-height: 1.1;
-  white-space: pre-wrap;
-`;
-
-const StatusText = styled.p`
-  margin: 0;
-  color: #243142;
-  font-weight: 800;
-  line-height: 1.45;
-`;
 
 export default PetDisplay;

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import styled from "styled-components";
 
+import { Header, PageShell } from "./App.styles";
 import CheckInForm from "./components/CheckInForm";
 import HistoryList from "./components/HistoryList";
 import RetroDeviceFrame from "./components/RetroDeviceFrame";
@@ -103,27 +103,5 @@ function App() {
     </PageShell>
   );
 }
-
-const PageShell = styled.main`
-  width: min(100%, 560px);
-  margin: 0 auto;
-  padding: 24px 14px 48px;
-`;
-
-const Header = styled.header`
-  margin-bottom: 24px;
-
-  h1 {
-    margin: 0 0 8px;
-    font-size: clamp(2rem, 8vw, 3.25rem);
-    line-height: 1;
-  }
-
-  p {
-    margin: 0;
-    color: #5f6b7a;
-    line-height: 1.6;
-  }
-`;
 
 export default App;
