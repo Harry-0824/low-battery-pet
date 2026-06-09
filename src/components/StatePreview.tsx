@@ -1,9 +1,8 @@
-import styled from "styled-components";
-
 import type { PetState } from "../features/pet/petTypes";
 import type { CompanionReply } from "../features/reply/replyTypes";
 import CompanionReplyPreview from "./CompanionReplyPreview";
 import PetDisplay from "./PetDisplay";
+import { PreviewPanel } from "./StatePreview.styles";
 
 interface PreviewState {
   petState: PetState;
@@ -26,11 +25,5 @@ function StatePreview({ previewState }: StatePreviewProps) {
     </PreviewPanel>
   );
 }
-
-const PreviewPanel = styled.section`
-  display: grid;
-  gap: 14px;
-  margin-top: 24px;
-`;
 
 export default StatePreview;
