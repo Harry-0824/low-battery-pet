@@ -24,9 +24,9 @@ const createHistoryRecord = (createdAt: string): CheckInHistoryRecord => ({
     accessory: "none"
   },
   companionReply: {
-    reply: "Lonely evenings feel heavier. I am here, and you do not have to perform.",
-    petLine: "I will keep the little light on beside you.",
-    tinyAction: "Set a 10 minute no-output rest block and put the phone face down.",
+    reply: "孤單的夜晚會比較重。我在這裡，你不用努力表現得很好。",
+    petLine: "我會在你旁邊留一盞小燈。",
+    tinyAction: "設一個 10 分鐘不用產出的休息，把手機螢幕朝下。",
     tone: "warm",
     note: "Need a small plan"
   },
@@ -42,26 +42,26 @@ afterEach(() => {
 });
 
 describe("App", () => {
-  it("renders existing app content inside the retro device screen", () => {
+  it("renders localized app content inside the retro device screen", () => {
     render(<App />);
 
     const deviceScreen = screen.getByTestId("retro-device-screen");
 
-    expect(screen.getByText("LOW BATTERY PET")).toBeTruthy();
-    expect(within(deviceScreen).getByText("Low Battery Pet")).toBeTruthy();
-    expect(within(deviceScreen).getByLabelText("Optional check-in note")).toBeTruthy();
-    expect(within(deviceScreen).getByText("Check-in history")).toBeTruthy();
+    expect(screen.getByText("小電量獸")).toBeTruthy();
+    expect(within(deviceScreen).getByText("今天電量如何？")).toBeTruthy();
+    expect(within(deviceScreen).getByLabelText("想丟進樹洞的話")).toBeTruthy();
+    expect(within(deviceScreen).getByText("最近被接住的時候")).toBeTruthy();
   });
 
   it("renders mood options", () => {
     render(<App />);
 
-    expect(screen.getByText("Low Battery Pet")).toBeTruthy();
+    expect(screen.getByText("今天電量如何？")).toBeTruthy();
     expect(screen.getByRole("button", { name: "還行" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "快沒電" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "很煩" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "有點孤單" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "不想思考" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "腦袋空白" })).toBeTruthy();
   });
 
   it("lets the user select one mood option", () => {
@@ -80,7 +80,7 @@ describe("App", () => {
   it("lets the user toggle a context tag", () => {
     render(<App />);
 
-    const walletButton = screen.getByRole("button", { name: "錢包危險" });
+    const walletButton = screen.getByRole("button", { name: "錢包壓力" });
     fireEvent.click(walletButton);
 
     expect(walletButton.getAttribute("aria-pressed")).toBe("true");
@@ -90,78 +90,91 @@ describe("App", () => {
     expect(walletButton.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("submits the check-in and displays derived user and pet state previews", () => {
+  it("submits the check-in and displays a user-facing text pet result", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "快沒電" }));
-    fireEvent.click(screen.getByRole("button", { name: "錢包危險" }));
-    fireEvent.click(screen.getByRole("button", { name: "Preview state" }));
+    fireEvent.click(screen.getByRole("button", { name: "錢包壓力" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
-    expect(screen.getByText("Selected mood: low_battery")).toBeTruthy();
-    expect(screen.getByText("Selected contexts: wallet_pressure")).toBeTruthy();
-    expect(screen.getByText("energyLevel: critical")).toBeTruthy();
-    expect(screen.getByText("hasWalletPressure: true")).toBeTruthy();
-    expect(screen.getByText("mood: low_power")).toBeTruthy();
-    expect(screen.getByText("effect: low_battery")).toBeTruthy();
+    const result = screen.getByTestId("check-in-result");
+    expect(within(result).getByText("( x_x )")).toBeTruthy();
+    expect(within(result).getByText("小電量獸快沒電了")).toBeTruthy();
+    expect(screen.getByText("牠說")).toBeTruthy();
+    expect(screen.getByText("你的電量聽起來很低。先不用做大事，從一個很小的重開機開始。")).toBeTruthy();
+    expect(screen.getByText("一件小事")).toBeTruthy();
+    expect(screen.getByText("打開一張帳單或餘額，看見下一個到期日就先停。")).toBeTruthy();
+    expect(screen.queryByText("State preview")).toBeNull();
+    expect(screen.queryByText("Derived user state")).toBeNull();
+    expect(screen.queryByText("Pet state")).toBeNull();
+    expect(screen.queryByText("Tone")).toBeNull();
   });
 
-  it("accepts optional text and displays a companion reply preview", () => {
+  it("accepts optional text without showing note debug output", () => {
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Optional check-in note"), {
+    fireEvent.change(screen.getByLabelText("想丟進樹洞的話"), {
       target: { value: "Need a small plan" }
     });
-    const buttons = screen.getAllByRole("button");
-    fireEvent.click(buttons[3]);
-    fireEvent.click(buttons[9]);
-    fireEvent.click(screen.getByRole("button", { name: "Preview state" }));
+    fireEvent.click(screen.getByRole("button", { name: "有點孤單" }));
+    fireEvent.click(screen.getByRole("button", { name: "想躺著" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
-    expect(screen.getByText("Tone: warm")).toBeTruthy();
-    expect(screen.getByText("Pet line: I will keep the little light on beside you.")).toBeTruthy();
-    expect(
-      screen.getByText(
-        "Tiny action: Set a 10 minute no-output rest block and put the phone face down."
-      )
-    ).toBeTruthy();
-    expect(screen.getByText("Note: Need a small plan")).toBeTruthy();
+    expect(screen.getByText("牠說")).toBeTruthy();
+    expect(screen.getByText("一件小事")).toBeTruthy();
+    expect(screen.queryByText("Tone: warm")).toBeNull();
+    expect(screen.queryByText("Note: Need a small plan")).toBeNull();
   });
 
   it("shows an empty history state when no records exist", () => {
     render(<App />);
 
-    expect(screen.getByText("Check-in history")).toBeTruthy();
-    expect(screen.getByText("No saved check-ins yet.")).toBeTruthy();
+    expect(screen.getByText("最近被接住的時候")).toBeTruthy();
+    expect(screen.getByText("還沒有被接住的紀錄。")).toBeTruthy();
   });
 
-  it("loads saved history records newest first", () => {
+  it("loads saved history records newest first with localized summaries", () => {
     saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
     saveCheckInRecord(createHistoryRecord("2026-06-08T11:00:00.000Z"));
 
     render(<App />);
 
     const historyCards = screen.getAllByTestId("history-card");
-    expect(historyCards[0].textContent).toContain("2026-06-08T11:00:00.000Z");
-    expect(historyCards[0].textContent).toContain("moodTag: lonely");
-    expect(historyCards[0].textContent).toContain("contexts: want_to_rest");
-    expect(historyCards[0].textContent).toContain("pet: lonely / rain");
-    expect(historyCards[0].textContent).toContain("reply: Lonely evenings feel heavier.");
+    expect(historyCards[0].textContent).toContain("有點孤單・想躺著");
+    expect(historyCards[0].textContent).toContain("小電量獸躲到角落");
+    expect(historyCards[0].textContent).toContain("孤單的夜晚會比較重。");
+    expect(historyCards[0].textContent).not.toContain("2026-06-08T11:00:00.000Z");
+    expect(historyCards[0].textContent).not.toContain("moodTag:");
+    expect(historyCards[0].textContent).not.toContain("contexts:");
+    expect(historyCards[0].textContent).not.toContain("pet:");
+  });
+
+  it("limits visible history records to the three most recent records", () => {
+    saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
+    saveCheckInRecord(createHistoryRecord("2026-06-08T11:00:00.000Z"));
+    saveCheckInRecord(createHistoryRecord("2026-06-08T12:00:00.000Z"));
+    saveCheckInRecord(createHistoryRecord("2026-06-08T13:00:00.000Z"));
+
+    render(<App />);
+
+    expect(screen.getAllByTestId("history-card")).toHaveLength(3);
   });
 
   it("clears saved history and updates the visible history state", () => {
     saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Clear history" }));
+    fireEvent.click(screen.getByRole("button", { name: "清空紀錄" }));
 
     expect(screen.queryByTestId("history-card")).toBeNull();
-    expect(screen.getByText("No saved check-ins yet.")).toBeTruthy();
+    expect(screen.getByText("還沒有被接住的紀錄。")).toBeTruthy();
   });
 
   it("adds a submitted check-in to the visible history list", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Preview state" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
-    expect(screen.getByTestId("history-card").textContent).toContain("moodTag: okay");
+    expect(screen.getByTestId("history-card").textContent).toContain("還行");
   });
 });

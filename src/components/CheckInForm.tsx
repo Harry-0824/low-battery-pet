@@ -8,14 +8,14 @@ const moodOptions: Array<{ value: MoodTag; label: string }> = [
   { value: "low_battery", label: "快沒電" },
   { value: "annoyed", label: "很煩" },
   { value: "lonely", label: "有點孤單" },
-  { value: "no_thoughts", label: "不想思考" }
+  { value: "no_thoughts", label: "腦袋空白" }
 ];
 
 const contextOptions: Array<{ value: ContextTag; label: string }> = [
-  { value: "wallet_pressure", label: "錢包危險" },
+  { value: "wallet_pressure", label: "錢包壓力" },
   { value: "work_stress", label: "工作爆炸" },
-  { value: "social_fatigue", label: "人際疲勞" },
-  { value: "dinner_problem", label: "晚餐困難" },
+  { value: "social_fatigue", label: "社交疲勞" },
+  { value: "dinner_problem", label: "晚餐選擇" },
   { value: "want_to_rest", label: "想躺著" }
 ];
 
@@ -42,7 +42,7 @@ function CheckInForm({
       }}
     >
       <Section>
-        <h2>現在的電量</h2>
+        <h2>今天的電量</h2>
         <ButtonGrid>
           {moodOptions.map((option) => (
             <TagButton
@@ -56,7 +56,7 @@ function CheckInForm({
       </Section>
 
       <Section>
-        <h2>額外狀況</h2>
+        <h2>今天卡住的事</h2>
         <ButtonGrid>
           {contextOptions.map((option) => (
             <TagButton
@@ -69,7 +69,7 @@ function CheckInForm({
         </ButtonGrid>
       </Section>
 
-      <SubmitButton type="submit">Preview state</SubmitButton>
+      <SubmitButton type="submit">讓小電量獸接住我</SubmitButton>
     </Form>
   );
 }

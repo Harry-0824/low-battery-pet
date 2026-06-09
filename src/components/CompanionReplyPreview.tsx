@@ -12,25 +12,32 @@ function CompanionReplyPreview({ reply }: CompanionReplyPreviewProps) {
   }
 
   return (
-    <PreviewPanel aria-live="polite">
-      <h2>Companion reply</h2>
-      <PreviewLine>Reply: {reply.reply}</PreviewLine>
-      <PreviewLine>Pet line: {reply.petLine}</PreviewLine>
-      <PreviewLine>Tiny action: {reply.tinyAction}</PreviewLine>
-      <PreviewLine>Tone: {reply.tone}</PreviewLine>
-      {reply.note ? <PreviewLine>Note: {reply.note}</PreviewLine> : null}
+    <PreviewPanel>
+      <ReplyGroup>
+        <h2>牠說</h2>
+        <PreviewLine>{reply.reply}</PreviewLine>
+        <PreviewLine>{reply.petLine}</PreviewLine>
+      </ReplyGroup>
+      <ReplyGroup>
+        <h2>一件小事</h2>
+        <PreviewLine>{reply.tinyAction}</PreviewLine>
+      </ReplyGroup>
     </PreviewPanel>
   );
 }
 
 const PreviewPanel = styled.section`
   display: grid;
-  gap: 10px;
-  margin-top: 24px;
+  gap: 14px;
   border: 1px solid #d7dde6;
   border-radius: 8px;
   padding: 18px;
   background: #ffffff;
+`;
+
+const ReplyGroup = styled.div`
+  display: grid;
+  gap: 8px;
 
   h2,
   p {

@@ -2,12 +2,11 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import CheckInForm from "./components/CheckInForm";
-import CompanionReplyPreview from "./components/CompanionReplyPreview";
 import HistoryList from "./components/HistoryList";
 import RetroDeviceFrame from "./components/RetroDeviceFrame";
 import StatePreview from "./components/StatePreview";
 import TreeTextInput from "./components/TreeTextInput";
-import type { ContextTag, DerivedUserState, MoodTag } from "./features/checkIn/checkInTypes";
+import type { ContextTag, MoodTag } from "./features/checkIn/checkInTypes";
 import { deriveUserState } from "./features/checkIn/deriveUserState";
 import {
   clearCheckInHistory,
@@ -21,9 +20,6 @@ import { generateCompanionReply } from "./features/reply/companionReplyEngine";
 import type { CompanionReply } from "./features/reply/replyTypes";
 
 interface PreviewState {
-  moodTag: MoodTag;
-  contextTags: ContextTag[];
-  derivedUserState: DerivedUserState;
   petState: PetState;
   companionReply: CompanionReply;
 }
@@ -68,8 +64,6 @@ function App() {
     setHistoryRecords(records);
 
     setPreviewState({
-      ...input,
-      derivedUserState,
       petState,
       companionReply
     });
@@ -84,8 +78,8 @@ function App() {
     <PageShell>
       <RetroDeviceFrame>
         <Header>
-          <h1>Low Battery Pet</h1>
-          <p>選一個現在的狀態，預覽小寵物會怎麼反應。</p>
+          <h1>今天電量如何？</h1>
+          <p>選一下現在的狀態，讓小電量獸接住你。</p>
         </Header>
         <TreeTextInput value={shortText} onChange={setShortText} />
         <CheckInForm
@@ -96,7 +90,6 @@ function App() {
           onSubmit={handleSubmit}
         />
         <StatePreview previewState={previewState} />
-        <CompanionReplyPreview reply={previewState?.companionReply ?? null} />
         <HistoryList records={historyRecords} onClear={handleClearHistory} />
       </RetroDeviceFrame>
     </PageShell>
