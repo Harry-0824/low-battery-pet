@@ -64,6 +64,21 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "腦袋空白" })).toBeTruthy();
   });
 
+  it("initially has no selected mood and disables submit with helper text", () => {
+    render(<App />);
+
+    expect(screen.getByRole("button", { name: "還行" }).getAttribute("aria-pressed")).toBe(
+      "false"
+    );
+    expect(screen.getByRole("button", { name: "快沒電" }).getAttribute("aria-pressed")).toBe(
+      "false"
+    );
+    expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+    expect(screen.getByText("先選一個今天的電量")).toBeTruthy();
+  });
+
   it("lets the user select one mood option", () => {
     render(<App />);
 
@@ -126,6 +141,30 @@ describe("App", () => {
     expect(screen.queryByText("Note: Need a small plan")).toBeNull();
   });
 
+  it("clears note, mood, and context selections after submit", () => {
+    render(<App />);
+
+    const noteInput = screen.getByLabelText("想丟進樹洞的話");
+    const moodButton = screen.getByRole("button", { name: "快沒電" });
+    const contextButton = screen.getByRole("button", { name: "錢包壓力" });
+
+    fireEvent.change(noteInput, {
+      target: { value: "Need a small plan" }
+    });
+    fireEvent.click(moodButton);
+    fireEvent.click(contextButton);
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
+
+    expect((noteInput as HTMLTextAreaElement).value).toBe("");
+    expect(moodButton.getAttribute("aria-pressed")).toBe("false");
+    expect(contextButton.getAttribute("aria-pressed")).toBe("false");
+    expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+    expect(screen.getByText("先選一個今天的電量")).toBeTruthy();
+    expect(screen.getByTestId("check-in-result")).toBeTruthy();
+  });
+
   it("shows an empty history state when no records exist", () => {
     render(<App />);
 
@@ -164,7 +203,7 @@ describe("App", () => {
     saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "清空紀錄" }));
+    fireEvent.click(screen.getByRole("button", { name: "放下這些紀錄" }));
 
     expect(screen.queryByTestId("history-card")).toBeNull();
     expect(screen.getByText("還沒有被接住的紀錄。")).toBeTruthy();
@@ -173,6 +212,7 @@ describe("App", () => {
   it("adds a submitted check-in to the visible history list", () => {
     render(<App />);
 
+    fireEvent.click(screen.getByRole("button", { name: "還行" }));
     fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
     expect(screen.getByTestId("history-card").textContent).toContain("還行");

@@ -20,7 +20,7 @@ const contextOptions: Array<{ value: ContextTag; label: string }> = [
 ];
 
 interface CheckInFormProps {
-  selectedMoodTag: MoodTag;
+  selectedMoodTag: MoodTag | null;
   selectedContextTags: ContextTag[];
   onMoodSelect: (moodTag: MoodTag) => void;
   onContextToggle: (contextTag: ContextTag) => void;
@@ -34,15 +34,20 @@ function CheckInForm({
   onContextToggle,
   onSubmit
 }: CheckInFormProps) {
+  const canSubmit = selectedMoodTag !== null;
+
   return (
     <Form
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        if (canSubmit) {
+          onSubmit();
+        }
       }}
     >
       <Section>
         <h2>今天的電量</h2>
+        {!canSubmit ? <HelperText>先選一個今天的電量</HelperText> : null}
         <ButtonGrid>
           {moodOptions.map((option) => (
             <TagButton
@@ -69,7 +74,9 @@ function CheckInForm({
         </ButtonGrid>
       </Section>
 
-      <SubmitButton type="submit">讓小電量獸接住我</SubmitButton>
+      <SubmitButton type="submit" disabled={!canSubmit}>
+        讓小電量獸接住我
+      </SubmitButton>
     </Form>
   );
 }
@@ -95,16 +102,32 @@ const ButtonGrid = styled.div`
   gap: 10px;
 `;
 
+const HelperText = styled.p`
+  margin: 0;
+  color: #8a4b21;
+  font-size: 0.9rem;
+  line-height: 1.45;
+`;
+
 const SubmitButton = styled.button`
   min-height: 48px;
   border: 0;
   border-radius: 8px;
   padding: 12px 16px;
-  background: #2c6e49;
-  color: #ffffff;
+  background: #f28c52;
+  color: #fff7ed;
   cursor: pointer;
   font: inherit;
   font-weight: 800;
+
+  &:hover:not(:disabled) {
+    background: #e5773f;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
 `;
 
 export default CheckInForm;

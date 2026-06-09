@@ -25,7 +25,7 @@ interface PreviewState {
 }
 
 function App() {
-  const [selectedMoodTag, setSelectedMoodTag] = useState<MoodTag>("okay");
+  const [selectedMoodTag, setSelectedMoodTag] = useState<MoodTag | null>(null);
   const [selectedContextTags, setSelectedContextTags] = useState<ContextTag[]>([]);
   const [shortText, setShortText] = useState("");
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
@@ -42,6 +42,10 @@ function App() {
   };
 
   const handleSubmit = () => {
+    if (!selectedMoodTag) {
+      return;
+    }
+
     const input = {
       moodTag: selectedMoodTag,
       contextTags: selectedContextTags,
@@ -67,6 +71,10 @@ function App() {
       petState,
       companionReply
     });
+
+    setSelectedMoodTag(null);
+    setSelectedContextTags([]);
+    setShortText("");
   };
 
   const handleClearHistory = () => {
