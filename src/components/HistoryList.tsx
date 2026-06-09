@@ -10,19 +10,21 @@ interface HistoryListProps {
 }
 
 function HistoryList({ records, onClear }: HistoryListProps) {
+  const visibleRecords = records.slice(0, 3);
+
   return (
     <HistorySection>
       <HistoryHeader>
-        <h2>Check-in history</h2>
+        <h2>最近被接住的時候</h2>
         {records.length > 0 ? (
           <ClearButton type="button" onClick={onClear}>
-            Clear history
+            清空紀錄
           </ClearButton>
         ) : null}
       </HistoryHeader>
       {records.length > 0 ? (
         <CardList>
-          {records.map((record) => (
+          {visibleRecords.map((record) => (
             <HistoryCard key={record.createdAt} record={record} />
           ))}
         </CardList>

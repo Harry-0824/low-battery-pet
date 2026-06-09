@@ -3,7 +3,7 @@ import styled from "styled-components";
 function EmptyHistoryState() {
   return (
     <EmptyState>
-      <p>No saved check-ins yet.</p>
+      <p>還沒有被接住的紀錄。</p>
     </EmptyState>
   );
 }

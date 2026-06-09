@@ -3,6 +3,7 @@ import styled from "styled-components";
 import type { CheckInHistoryRecord } from "../features/history/historyTypes";
 import {
   formatHistoryContextTags,
+  formatHistoryCreatedAt,
   formatHistoryPetSummary,
   formatHistoryReplySummary
 } from "../features/history/historyView";
@@ -14,11 +15,10 @@ interface HistoryCardProps {
 function HistoryCard({ record }: HistoryCardProps) {
   return (
     <Card data-testid="history-card">
-      <CreatedAt>{record.createdAt}</CreatedAt>
-      <HistoryLine>moodTag: {record.moodTag}</HistoryLine>
-      <HistoryLine>contexts: {formatHistoryContextTags(record)}</HistoryLine>
-      <HistoryLine>pet: {formatHistoryPetSummary(record)}</HistoryLine>
-      <HistoryLine>reply: {formatHistoryReplySummary(record)}</HistoryLine>
+      <CreatedAt>{formatHistoryCreatedAt(record.createdAt)}</CreatedAt>
+      <HistoryLine>{formatHistoryContextTags(record)}</HistoryLine>
+      <HistoryLine>{formatHistoryPetSummary(record)}</HistoryLine>
+      <HistoryLine>{formatHistoryReplySummary(record)}</HistoryLine>
     </Card>
   );
 }

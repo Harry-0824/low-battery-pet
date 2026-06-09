@@ -3,9 +3,9 @@ import styled from "styled-components";
 
 function RetroDeviceFrame({ children }: PropsWithChildren) {
   return (
-    <DeviceShell aria-label="Retro digital pet device">
+    <DeviceShell aria-label="小電量獸裝置">
       <DeviceHeader>
-        <Brand>LOW BATTERY PET</Brand>
+        <Brand>小電量獸</Brand>
         <StatusLights aria-hidden="true">
           <StatusLight />
           <StatusLight />
