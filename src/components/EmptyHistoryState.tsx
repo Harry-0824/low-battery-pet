@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import { EmptyState } from "./EmptyHistoryState.styles";
 
 function EmptyHistoryState() {
   return (
@@ -7,17 +7,5 @@ function EmptyHistoryState() {
     </EmptyState>
   );
 }
-
-const EmptyState = styled.div`
-  border: 1px dashed #c7d0dc;
-  border-radius: 8px;
-  padding: 16px;
-  background: #f8fafc;
-  color: #5f6b7a;
-
-  p {
-    margin: 0;
-  }
-`;
 
 export default EmptyHistoryState;
