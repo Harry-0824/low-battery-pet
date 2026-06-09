@@ -15,82 +15,123 @@ describe("generateCompanionReply", () => {
   const moodCases: Array<{
     moodTag: MoodTag;
     expectedTone: string;
-    expectedReply: string;
+    expectedReplies: string[];
   }> = [
     {
       moodTag: "okay",
       expectedTone: "calm",
-      expectedReply: "能穩穩撐住也算數。我會坐在旁邊，陪你把步調放小。"
+      expectedReplies: [
+        "今天有一點電就很好。我會窩在旁邊，陪你慢慢亮著。",
+        "不用很有精神也可以。我把小毯子拖過來，陪你待一下。",
+        "你還在這裡，就已經夠了。我也慢慢的，不急。"
+      ]
     },
     {
       moodTag: "low_battery",
       expectedTone: "soft",
-      expectedReply: "你的電量聽起來很低。先不用做大事，從一個很小的重開機開始。"
+      expectedReplies: [
+        "電量真的很低的時候，先不要硬撐。我陪你進省電模式。",
+        "小電池快閃了。我們先把世界調小一點，好嗎。",
+        "今天先不要跑太遠。我會趴在充電線旁邊等你。"
+      ]
     },
     {
       moodTag: "annoyed",
       expectedTone: "grounding",
-      expectedReply: "煩躁可以先存在。我們先把火降下來，再決定下一步。"
+      expectedReplies: [
+        "煩煩的也沒關係。我先把小爪子收好，陪你安靜一下。",
+        "今天的毛有點炸。我們先不要整理全部，只先離吵的地方遠一點。",
+        "我聽見那個卡卡的感覺了。先不用變溫柔，慢慢放下就好。"
+      ]
     },
     {
       moodTag: "lonely",
       expectedTone: "warm",
-      expectedReply: "孤單的夜晚會比較重。我在這裡，你不用努力表現得很好。"
+      expectedReplies: [
+        "孤單會讓房間變大。我在這裡，縮成小小一團陪你。",
+        "你不用把自己撐得很亮。我會留一點微弱的光在旁邊。",
+        "我靠近一點點，不吵你。今晚不用一個人扛得很好。"
+      ]
     },
     {
       moodTag: "no_thoughts",
       expectedTone: "minimal",
-      expectedReply: "腦袋空白也是一種訊號。我們把下一步縮到很小就好。"
+      expectedReplies: [
+        "腦袋空空的時候，我們先不要追答案。我陪你停在這裡。",
+        "現在沒有想法也可以。我會慢慢眨眼，等雲飄過去。",
+        "先不用整理成句子。你只要坐著，我就在旁邊低電量發光。"
+      ]
     }
   ];
 
-  it.each(moodCases)("maps $moodTag to a deterministic companion reply", ({
+  it.each(moodCases)("maps $moodTag to a gentle deterministic companion reply", ({
     moodTag,
     expectedTone,
-    expectedReply
+    expectedReplies
   }) => {
-    expect(generateCompanionReply(createInput(moodTag))).toMatchObject({
-      tone: expectedTone,
-      reply: expectedReply
-    });
+    const result = generateCompanionReply(createInput(moodTag));
+
+    expect(result.tone).toBe(expectedTone);
+    expect(expectedReplies).toContain(result.reply);
+  });
+
+  it("keeps variant selection deterministic for the same input", () => {
+    const input = {
+      ...createInput("lonely", ["social_fatigue"]),
+      shortText: "今天有點安靜"
+    };
+
+    expect(generateCompanionReply(input)).toEqual(generateCompanionReply(input));
   });
 
   it("uses the wallet pressure tiny action when wallet pressure is present", () => {
     expect(generateCompanionReply(createInput("okay", ["wallet_pressure"]))).toMatchObject({
-      tinyAction: "打開一張帳單或餘額，看見下一個到期日就先停。"
+      tinyAction: "只看一眼下一個到期日，看完就讓它先躺著。"
     });
   });
 
   it("uses the dinner problem tiny action when dinner help is needed", () => {
     expect(generateCompanionReply(createInput("okay", ["dinner_problem"]))).toMatchObject({
-      tinyAction: "選現在最容易取得的熱食，不用完美。"
+      tinyAction: "選最省力的一口熱食，吃到一點點就算有充電。"
     });
   });
 
   it("uses the rest tiny action when rest is requested", () => {
     expect(generateCompanionReply(createInput("okay", ["want_to_rest"]))).toMatchObject({
-      tinyAction: "設一個 10 分鐘不用產出的休息，把手機螢幕朝下。"
+      tinyAction: "躺或坐 10 分鐘，不用產出，也不用解釋。"
     });
   });
 
   it("uses localized pet lines from the existing pet state", () => {
-    expect(generateCompanionReply(createInput("okay"))).toMatchObject({
-      petLine: "我會待在旁邊，慢慢眨眼。"
-    });
-    expect(generateCompanionReply(createInput("low_battery"))).toMatchObject({
-      petLine: "我先幫你把房間燈光調暗。"
-    });
-    expect(generateCompanionReply(createInput("annoyed"))).toMatchObject({
-      petLine: "小爪子踩在地上。我們先呼吸。"
-    });
-    expect(generateCompanionReply(createInput("lonely"))).toMatchObject({
-      petLine: "我會在你旁邊留一盞小燈。"
-    });
-    expect(generateCompanionReply(createInput("okay", ["wallet_pressure"]))).toMatchObject({
-      petLine: "我陪你一起守住硬幣堆。"
-    });
-    expect(generateCompanionReply(createInput("okay", ["dinner_problem"]))).toMatchObject({
-      petLine: "我找到最小條的晚餐路線了。"
-    });
+    expect([
+      "我會待在旁邊，慢慢眨眼。",
+      "我把尾巴圈起來，陪你小小休息。",
+      "我今天也不太亮，但我還在。"
+    ]).toContain(generateCompanionReply(createInput("okay")).petLine);
+    expect([
+      "我先幫你把房間燈光調暗。",
+      "我趴在充電口旁邊，陪你省一點電。",
+      "我把聲音放很低，只陪你一下下。"
+    ]).toContain(generateCompanionReply(createInput("low_battery")).petLine);
+    expect([
+      "小爪子踩在地上，我陪你先停一下。",
+      "我把炸毛壓低一點，先不催你。",
+      "我守在旁邊，讓吵吵的東西先遠一點。"
+    ]).toContain(generateCompanionReply(createInput("annoyed")).petLine);
+    expect([
+      "我會在你旁邊留一盞小燈。",
+      "我靠近一點點，安靜陪著。",
+      "我把小毯子分你一角。"
+    ]).toContain(generateCompanionReply(createInput("lonely")).petLine);
+    expect([
+      "我陪你一起守住硬幣堆。",
+      "我把小錢包抱緊，先陪你看一眼就好。",
+      "我坐在帳單旁邊，不讓它變成怪物。"
+    ]).toContain(generateCompanionReply(createInput("okay", ["wallet_pressure"])).petLine);
+    expect([
+      "我找到最小條的晚餐路線了。",
+      "我把飯糰推近一點點，不用煮得很漂亮。",
+      "我陪你選最省力的那口熱熱的。"
+    ]).toContain(generateCompanionReply(createInput("okay", ["dinner_problem"])).petLine);
   });
 });
