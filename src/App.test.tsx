@@ -24,9 +24,9 @@ const createHistoryRecord = (createdAt: string): CheckInHistoryRecord => ({
     accessory: "none"
   },
   companionReply: {
-    reply: "Lonely evenings feel heavier. I am here, and you do not have to perform.",
-    petLine: "I will keep the little light on beside you.",
-    tinyAction: "Set a 10 minute no-output rest block and put the phone face down.",
+    reply: "孤單的夜晚會比較重。我在這裡，你不用努力表現得很好。",
+    petLine: "我會在你旁邊留一盞小燈。",
+    tinyAction: "設一個 10 分鐘不用產出的休息，把手機螢幕朝下。",
     tone: "warm",
     note: "Need a small plan"
   },
@@ -59,7 +59,7 @@ describe("App", () => {
     expect(screen.getByText("今天電量如何？")).toBeTruthy();
     expect(screen.getByRole("button", { name: "還行" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "快沒電" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "有點煩" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "很煩" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "有點孤單" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "腦袋空白" })).toBeTruthy();
   });
@@ -101,7 +101,9 @@ describe("App", () => {
     expect(within(result).getByText("( x_x )")).toBeTruthy();
     expect(within(result).getByText("小電量獸快沒電了")).toBeTruthy();
     expect(screen.getByText("牠說")).toBeTruthy();
+    expect(screen.getByText("你的電量聽起來很低。先不用做大事，從一個很小的重開機開始。")).toBeTruthy();
     expect(screen.getByText("一件小事")).toBeTruthy();
+    expect(screen.getByText("打開一張帳單或餘額，看見下一個到期日就先停。")).toBeTruthy();
     expect(screen.queryByText("State preview")).toBeNull();
     expect(screen.queryByText("Derived user state")).toBeNull();
     expect(screen.queryByText("Pet state")).toBeNull();
@@ -140,7 +142,7 @@ describe("App", () => {
     const historyCards = screen.getAllByTestId("history-card");
     expect(historyCards[0].textContent).toContain("有點孤單・想躺著");
     expect(historyCards[0].textContent).toContain("小電量獸躲到角落");
-    expect(historyCards[0].textContent).toContain("Lonely evenings feel heavier.");
+    expect(historyCards[0].textContent).toContain("孤單的夜晚會比較重。");
     expect(historyCards[0].textContent).not.toContain("2026-06-08T11:00:00.000Z");
     expect(historyCards[0].textContent).not.toContain("moodTag:");
     expect(historyCards[0].textContent).not.toContain("contexts:");

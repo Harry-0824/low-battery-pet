@@ -6,7 +6,7 @@ import TagButton from "./TagButton";
 const moodOptions: Array<{ value: MoodTag; label: string }> = [
   { value: "okay", label: "還行" },
   { value: "low_battery", label: "快沒電" },
-  { value: "annoyed", label: "有點煩" },
+  { value: "annoyed", label: "很煩" },
   { value: "lonely", label: "有點孤單" },
   { value: "no_thoughts", label: "腦袋空白" }
 ];

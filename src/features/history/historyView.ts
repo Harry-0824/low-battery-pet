@@ -3,7 +3,7 @@ import type { CheckInHistoryRecord } from "./historyTypes";
 const moodSummary = {
   okay: "還行",
   low_battery: "快沒電",
-  annoyed: "有點煩",
+  annoyed: "很煩",
   lonely: "有點孤單",
   no_thoughts: "腦袋空白"
 } satisfies Record<CheckInHistoryRecord["moodTag"], string>;
