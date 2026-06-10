@@ -33,6 +33,11 @@ export const ClearButton = styled.button`
   &:hover {
     background: #fecaca;
   }
+
+  &:focus-visible {
+    outline: 3px solid rgba(153, 27, 27, 0.3);
+    outline-offset: 3px;
+  }
 `;
 
 export const CardList = styled.div`

@@ -34,9 +34,11 @@ function CheckInForm({
   onSubmit
 }: CheckInFormProps) {
   const canSubmit = selectedMoodTag !== null;
+  const moodHelperId = "mood-helper";
 
   return (
     <Form
+      aria-label="今日電量 check-in"
       onSubmit={(event) => {
         event.preventDefault();
         if (canSubmit) {
@@ -45,14 +47,15 @@ function CheckInForm({
       }}
     >
       <Section>
-        <h2>今天的電量</h2>
-        {!canSubmit ? <HelperText>先選一個今天的電量</HelperText> : null}
+        <legend>今天的電量</legend>
+        {!canSubmit ? <HelperText id={moodHelperId}>先選一個今天的電量</HelperText> : null}
         <ButtonGrid>
           {moodOptions.map((option) => (
             <TagButton
               key={option.value}
               label={option.label}
               isSelected={selectedMoodTag === option.value}
+              describedBy={!canSubmit ? moodHelperId : undefined}
               onClick={() => onMoodSelect(option.value)}
             />
           ))}
@@ -60,7 +63,7 @@ function CheckInForm({
       </Section>
 
       <Section>
-        <h2>今天卡住的事</h2>
+        <legend>今天卡住的事</legend>
         <ButtonGrid>
           {contextOptions.map((option) => (
             <TagButton
@@ -73,7 +76,7 @@ function CheckInForm({
         </ButtonGrid>
       </Section>
 
-      <SubmitButton type="submit" disabled={!canSubmit}>
+      <SubmitButton type="submit" disabled={!canSubmit} aria-describedby={!canSubmit ? moodHelperId : undefined}>
         讓小電量獸接住我
       </SubmitButton>
     </Form>

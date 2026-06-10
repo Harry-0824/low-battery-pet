@@ -11,11 +11,12 @@ interface HistoryListProps {
 
 function HistoryList({ records, emptyStateKind, onClear }: HistoryListProps) {
   const visibleRecords = records.slice(0, 3);
+  const historyTitleId = "history-title";
 
   return (
-    <HistorySection>
+    <HistorySection aria-labelledby={historyTitleId}>
       <HistoryHeader>
-        <h2>最近被接住的時候</h2>
+        <h2 id={historyTitleId}>最近被接住的時候</h2>
         {records.length > 0 ? (
           <ClearButton type="button" onClick={onClear}>
             放下這些紀錄
