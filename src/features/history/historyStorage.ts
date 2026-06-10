@@ -30,7 +30,20 @@ export const clearCheckInHistory = () => {
   localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
 };
 
+export const getCompanionDayCount = (records: CheckInHistoryRecord[]) =>
+  new Set(records.map((record) => getLocalDateKey(record.createdAt))).size;
+
 const sortNewestFirst = (records: CheckInHistoryRecord[]) => [...records].sort(compareNewestFirst);
 
 const compareNewestFirst = (first: CheckInHistoryRecord, second: CheckInHistoryRecord) =>
   second.createdAt.localeCompare(first.createdAt);
+
+const getLocalDateKey = (createdAt: string) => {
+  const date = new Date(createdAt);
+
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
+};

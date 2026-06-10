@@ -4,6 +4,7 @@ import type { CheckInHistoryRecord } from "./historyTypes";
 import {
   CHECK_IN_HISTORY_STORAGE_KEY,
   clearCheckInHistory,
+  getCompanionDayCount,
   loadCheckInHistory,
   saveCheckInRecord
 } from "./historyStorage";
@@ -75,5 +76,15 @@ describe("historyStorage", () => {
 
     expect(loadCheckInHistory()).toEqual([]);
     expect(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY)).toBeNull();
+  });
+
+  it("counts unique local check-in days instead of total records", () => {
+    const records = [
+      createRecord("2026-06-08T10:00:00.000Z"),
+      createRecord("2026-06-08T11:00:00.000Z"),
+      createRecord("2026-06-09T10:00:00.000Z")
+    ];
+
+    expect(getCompanionDayCount(records)).toBe(2);
   });
 });
