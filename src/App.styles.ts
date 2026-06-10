@@ -21,3 +21,14 @@ export const Header = styled.header`
     line-height: 1.6;
   }
 `;
+
+export const CompanionDaysNote = styled.p`
+  margin: -10px 0 22px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff7ed;
+  color: #7c2d12;
+  font-weight: 800;
+  line-height: 1.5;
+`;
