@@ -4,6 +4,10 @@ export const PageShell = styled.main`
   width: min(100%, 560px);
   margin: 0 auto;
   padding: 24px 14px 48px;
+
+  @media (max-width: 420px) {
+    padding: 12px 8px 32px;
+  }
 `;
 
 export const Header = styled.header`
@@ -11,7 +15,7 @@ export const Header = styled.header`
 
   h1 {
     margin: 0 0 8px;
-    font-size: clamp(2rem, 8vw, 3.25rem);
+    font-size: 3.25rem;
     line-height: 1;
   }
 
@@ -19,6 +23,19 @@ export const Header = styled.header`
     margin: 0;
     color: #5f6b7a;
     line-height: 1.6;
+  }
+
+  @media (max-width: 420px) {
+    margin-bottom: 18px;
+
+    h1 {
+      font-size: 2rem;
+      line-height: 1.08;
+    }
+
+    p {
+      line-height: 1.55;
+    }
   }
 `;
 
@@ -31,6 +48,12 @@ export const CompanionDaysNote = styled.p`
   color: #7c2d12;
   font-weight: 800;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 420px) {
+    margin: -6px 0 16px;
+    padding: 9px 10px;
+  }
 `;
 
 export const PetMemoryNote = styled.p`
@@ -42,4 +65,10 @@ export const PetMemoryNote = styled.p`
   color: #7c4a24;
   font-weight: 800;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 420px) {
+    margin: -6px 0 16px;
+    padding: 9px 10px;
+  }
 `;

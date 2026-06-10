@@ -33,6 +33,12 @@ export const TrailSection = styled.section`
   h2 {
     margin: 0;
     font-size: 1.05rem;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 420px) {
+    gap: 8px;
+    margin-bottom: 18px;
   }
 `;
 
@@ -46,6 +52,11 @@ export const TrailGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
+
+  @media (max-width: 420px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
 `;
 
 export const DayPip = styled.div<{ $energyLevel: BatteryTrailEnergyLevel }>`
@@ -56,6 +67,12 @@ export const DayPip = styled.div<{ $energyLevel: BatteryTrailEnergyLevel }>`
   background: ${({ $energyLevel }) => trailColor[$energyLevel].background};
   color: ${({ $energyLevel }) => trailColor[$energyLevel].text};
   text-align: center;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 420px) {
+    min-height: 54px;
+    padding: 7px 5px;
+  }
 `;
 
 export const DayLabel = styled.span`

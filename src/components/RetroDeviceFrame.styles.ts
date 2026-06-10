@@ -8,6 +8,13 @@ export const DeviceShell = styled.div`
   padding: 18px;
   background: #f0d66f;
   box-shadow: 0 18px 0 #caa442, 0 24px 36px rgba(36, 49, 66, 0.22);
+
+  @media (max-width: 420px) {
+    border-width: 2px;
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 10px 0 #caa442, 0 16px 24px rgba(36, 49, 66, 0.18);
+  }
 `;
 
 export const DeviceHeader = styled.div`
@@ -16,6 +23,10 @@ export const DeviceHeader = styled.div`
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
+
+  @media (max-width: 420px) {
+    margin-bottom: 10px;
+  }
 `;
 
 export const Brand = styled.p`
@@ -46,6 +57,13 @@ export const DeviceScreen = styled.div`
   border-radius: 14px;
   padding: 18px;
   background: #f8fafc;
+
+  @media (max-width: 420px) {
+    max-height: 76vh;
+    border-width: 2px;
+    border-radius: 12px;
+    padding: 12px;
+  }
 `;
 
 export const DeviceControls = styled.div`
@@ -54,12 +72,21 @@ export const DeviceControls = styled.div`
   justify-content: space-between;
   gap: 18px;
   margin-top: 18px;
+
+  @media (max-width: 420px) {
+    margin-top: 12px;
+  }
 `;
 
 export const DPad = styled.div`
   position: relative;
   width: 64px;
   height: 64px;
+
+  @media (max-width: 420px) {
+    width: 52px;
+    height: 52px;
+  }
 `;
 
 export const DPadLine = styled.span<{ $vertical?: boolean }>`
@@ -67,6 +94,10 @@ export const DPadLine = styled.span<{ $vertical?: boolean }>`
   inset: ${({ $vertical }) => ($vertical ? "4px 24px" : "24px 4px")};
   border-radius: 8px;
   background: #243142;
+
+  @media (max-width: 420px) {
+    inset: ${({ $vertical }) => ($vertical ? "4px 20px" : "20px 4px")};
+  }
 `;
 
 export const RoundButton = styled.span`
@@ -76,4 +107,10 @@ export const RoundButton = styled.span`
   border-radius: 999px;
   background: #e76f51;
   box-shadow: inset 0 -5px 0 rgba(36, 49, 66, 0.18);
+
+  @media (max-width: 420px) {
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+  }
 `;

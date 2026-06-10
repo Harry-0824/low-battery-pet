@@ -11,4 +11,10 @@ export const Button = styled.button<{ $isSelected: boolean }>`
   font: inherit;
   font-weight: 700;
   line-height: 1.2;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 420px) {
+    width: 100%;
+    padding: 10px 8px;
+  }
 `;
