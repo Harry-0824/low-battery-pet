@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { CompanionDaysNote, Header, PageShell } from "./App.styles";
+import { CompanionDaysNote, Header, PageShell, PetMemoryNote } from "./App.styles";
 import BatteryTrail from "./components/BatteryTrail";
 import CheckInForm from "./components/CheckInForm";
 import HistoryList from "./components/HistoryList";
@@ -12,6 +12,7 @@ import { deriveUserState } from "./features/checkIn/deriveUserState";
 import {
   clearCheckInHistory,
   getCompanionDayCount,
+  getPetStateMemoryMessage,
   getRecentBatteryTrail,
   loadCheckInHistory,
   saveCheckInRecord
@@ -42,6 +43,7 @@ function App() {
       ? `小電量獸陪你 ${companionDayCount} 天了`
       : "小電量獸今天先在旁邊待機，等你想靠近再開始。";
   const batteryTrailDays = getRecentBatteryTrail(historyRecords);
+  const petMemoryMessage = getPetStateMemoryMessage(historyRecords);
   const emptyHistoryKind = historyWasCleared ? "cleared" : "first-use";
 
   const handleContextToggle = (contextTag: ContextTag) => {
@@ -103,6 +105,9 @@ function App() {
           <p>選一下現在的狀態，讓小電量獸接住你。</p>
         </Header>
         <CompanionDaysNote data-testid="companion-days">{companionDaysMessage}</CompanionDaysNote>
+        {petMemoryMessage ? (
+          <PetMemoryNote data-testid="pet-state-memory">{petMemoryMessage}</PetMemoryNote>
+        ) : null}
         <BatteryTrail days={batteryTrailDays} />
         <TreeTextInput value={shortText} onChange={setShortText} />
         <CheckInForm

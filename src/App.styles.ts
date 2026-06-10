@@ -32,3 +32,14 @@ export const CompanionDaysNote = styled.p`
   font-weight: 800;
   line-height: 1.5;
 `;
+
+export const PetMemoryNote = styled.p`
+  margin: -10px 0 22px;
+  border: 1px solid #d8b58a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff8ed;
+  color: #7c4a24;
+  font-weight: 800;
+  line-height: 1.5;
+`;

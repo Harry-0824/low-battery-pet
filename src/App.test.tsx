@@ -204,6 +204,17 @@ describe("App", () => {
     expect(screen.getByTestId("companion-days").textContent).toBe("小電量獸陪你 2 天了");
   });
 
+  it("shows a tiny pet state memory from recent local history", () => {
+    saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z", "critical"));
+    saveCheckInRecord(createHistoryRecord("2026-06-09T10:00:00.000Z", "low"));
+
+    render(<App />);
+
+    expect(screen.getByTestId("pet-state-memory").textContent).toBe(
+      "最近好像常常在省電模式。小電量獸會把燈開小一點，陪你慢慢待著。"
+    );
+  });
+
   it("shows a soft recent seven-day battery trail from local history", () => {
     saveCheckInRecord(createHistoryRecord(getDateDaysAgo(2), "critical"));
     saveCheckInRecord(createHistoryRecord(getDateDaysAgo(1), "low"));

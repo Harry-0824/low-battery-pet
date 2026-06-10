@@ -5,6 +5,7 @@ import {
   CHECK_IN_HISTORY_STORAGE_KEY,
   clearCheckInHistory,
   getCompanionDayCount,
+  getPetStateMemoryMessage,
   getRecentBatteryTrail,
   loadCheckInHistory,
   saveCheckInRecord
@@ -134,5 +135,29 @@ describe("historyStorage", () => {
     );
 
     expect(trail[6].energyLevel).toBe("critical");
+  });
+
+  it("does not show pet state memory before there is recent history to compare", () => {
+    expect(getPetStateMemoryMessage([])).toBeNull();
+    expect(getPetStateMemoryMessage([createRecord("2026-06-10T09:00:00", "low")])).toBeNull();
+  });
+
+  it("softly remembers when recent records are often low power", () => {
+    expect(
+      getPetStateMemoryMessage([
+        createRecord("2026-06-10T09:00:00", "low"),
+        createRecord("2026-06-09T09:00:00", "critical"),
+        createRecord("2026-06-08T09:00:00", "normal")
+      ])
+    ).toBe("最近好像常常在省電模式。小電量獸會把燈開小一點，陪你慢慢待著。");
+  });
+
+  it("softly remembers when the user has recharged a little", () => {
+    expect(
+      getPetStateMemoryMessage([
+        createRecord("2026-06-10T09:00:00", "normal"),
+        createRecord("2026-06-09T09:00:00", "low")
+      ])
+    ).toBe("這幾天有稍微回充一點點。那一點點也會被小電量獸記得。");
   });
 });
