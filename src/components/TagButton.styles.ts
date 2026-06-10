@@ -17,4 +17,9 @@ export const Button = styled.button<{ $isSelected: boolean }>`
     width: 100%;
     padding: 10px 8px;
   }
+
+  &:focus-visible {
+    outline: 3px solid rgba(242, 140, 82, 0.45);
+    outline-offset: 3px;
+  }
 `;

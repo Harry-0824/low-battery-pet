@@ -14,15 +14,19 @@ export const Form = styled.form`
   }
 `;
 
-export const Section = styled.section`
+export const Section = styled.fieldset`
   display: grid;
   gap: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px;
   background: #ffffff;
+  margin: 0;
 
-  h2 {
+  legend {
+    padding: 0;
+    color: #243142;
+    font-weight: 800;
     margin: 0;
     font-size: 1rem;
   }
@@ -60,6 +64,11 @@ export const SubmitButton = styled.button`
 
   &:hover:not(:disabled) {
     background: #e5773f;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(35, 51, 72, 0.35);
+    outline-offset: 3px;
   }
 
   &:disabled {
