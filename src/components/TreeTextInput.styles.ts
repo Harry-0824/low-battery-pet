@@ -9,6 +9,12 @@ export const Field = styled.div`
   padding: 14px;
   background: linear-gradient(180deg, #fff8ed 0%, #fff3df 100%);
   box-shadow: inset 0 -8px 0 rgba(138, 75, 33, 0.08);
+
+  @media (max-width: 420px) {
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 12px;
+  }
 `;
 
 export const TextHeader = styled.div`
@@ -16,6 +22,12 @@ export const TextHeader = styled.div`
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+
+  @media (max-width: 360px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 `;
 
 export const Label = styled.label`
@@ -34,6 +46,7 @@ export const DrawerNote = styled.p`
   color: #7c4a24;
   font-size: 0.9rem;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 `;
 
 export const TextArea = styled.textarea`
@@ -46,10 +59,15 @@ export const TextArea = styled.textarea`
   color: #243142;
   font: inherit;
   line-height: 1.5;
+  min-height: 92px;
   resize: vertical;
 
   &:focus {
     outline: 3px solid rgba(242, 140, 82, 0.3);
     outline-offset: 2px;
+  }
+
+  @media (max-width: 420px) {
+    padding: 11px 12px;
   }
 `;

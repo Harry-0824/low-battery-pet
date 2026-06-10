@@ -7,6 +7,11 @@ export const Form = styled.form`
   border-radius: 12px;
   padding: 14px;
   background: #f8fafc;
+
+  @media (max-width: 420px) {
+    gap: 12px;
+    padding: 12px;
+  }
 `;
 
 export const Section = styled.section`
@@ -27,6 +32,12 @@ export const ButtonGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+
+  @media (max-width: 420px) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
 `;
 
 export const HelperText = styled.p`
