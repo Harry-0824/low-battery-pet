@@ -4,13 +4,16 @@ import App from "./App";
 import { saveCheckInRecord } from "./features/history/historyStorage";
 import type { CheckInHistoryRecord } from "./features/history/historyTypes";
 
-const createHistoryRecord = (createdAt: string): CheckInHistoryRecord => ({
+const createHistoryRecord = (
+  createdAt: string,
+  energyLevel: CheckInHistoryRecord["derivedUserState"]["energyLevel"] = "low"
+): CheckInHistoryRecord => ({
   moodTag: "lonely",
   contextTags: ["want_to_rest"],
   shortText: "Need a small plan",
   derivedUserState: {
     mood: "lonely",
-    energyLevel: "low",
+    energyLevel,
     stressLevel: "medium",
     needsComfort: true,
     hasWalletPressure: false,
@@ -32,6 +35,13 @@ const createHistoryRecord = (createdAt: string): CheckInHistoryRecord => ({
   },
   createdAt
 });
+
+const getDateDaysAgo = (daysAgo: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+
+  return date.toISOString();
+};
 
 beforeEach(() => {
   localStorage.clear();
@@ -191,6 +201,22 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByTestId("companion-days").textContent).toBe("小電量獸陪你 2 天了");
+  });
+
+  it("shows a soft recent seven-day battery trail from local history", () => {
+    saveCheckInRecord(createHistoryRecord(getDateDaysAgo(2), "critical"));
+    saveCheckInRecord(createHistoryRecord(getDateDaysAgo(1), "low"));
+    saveCheckInRecord(createHistoryRecord(getDateDaysAgo(0), "normal"));
+
+    render(<App />);
+
+    const trail = screen.getByTestId("battery-trail");
+    expect(screen.getByText("最近 7 天的小電量足跡")).toBeTruthy();
+    expect(screen.getByText("有記錄的日子會亮一下，空白也沒關係。")).toBeTruthy();
+    expect(within(trail).getAllByTestId("battery-trail-day")).toHaveLength(7);
+    expect(within(trail).getByText("快沒電")).toBeTruthy();
+    expect(within(trail).getByText("低電量")).toBeTruthy();
+    expect(within(trail).getByText("有一點亮")).toBeTruthy();
   });
 
   it("loads saved history records newest first with localized summaries", () => {
