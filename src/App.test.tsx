@@ -182,14 +182,15 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByText("最近被接住的時候")).toBeTruthy();
-    expect(screen.getByText("還沒有被接住的紀錄。")).toBeTruthy();
+    expect(screen.getByText("樹洞還空著")).toBeTruthy();
+    expect(screen.getByText(/還沒有被接住的紀錄。/)).toBeTruthy();
   });
 
   it("shows a gentle first-use companion-days message with no history", () => {
     render(<App />);
 
     expect(screen.getByTestId("companion-days").textContent).toBe(
-      "小電量獸會從今天開始陪你。"
+      "小電量獸今天先在旁邊待機，等你想靠近再開始。"
     );
   });
 
@@ -253,7 +254,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "放下這些紀錄" }));
 
     expect(screen.queryByTestId("history-card")).toBeNull();
-    expect(screen.getByText("還沒有被接住的紀錄。")).toBeTruthy();
+    expect(screen.getByText("紀錄已經放下了")).toBeTruthy();
+    expect(screen.getByText("這裡先變安靜。下一次想回來時，可以重新留下今天的電量。")).toBeTruthy();
   });
 
   it("adds a submitted check-in to the visible history list", () => {

@@ -1,14 +1,15 @@
 import type { CheckInHistoryRecord } from "../features/history/historyTypes";
 import { CardList, ClearButton, HistoryHeader, HistorySection } from "./HistoryList.styles";
-import EmptyHistoryState from "./EmptyHistoryState";
+import EmptyHistoryState, { type EmptyHistoryStateKind } from "./EmptyHistoryState";
 import HistoryCard from "./HistoryCard";
 
 interface HistoryListProps {
   records: CheckInHistoryRecord[];
+  emptyStateKind: EmptyHistoryStateKind;
   onClear: () => void;
 }
 
-function HistoryList({ records, onClear }: HistoryListProps) {
+function HistoryList({ records, emptyStateKind, onClear }: HistoryListProps) {
   const visibleRecords = records.slice(0, 3);
 
   return (
@@ -28,7 +29,7 @@ function HistoryList({ records, onClear }: HistoryListProps) {
           ))}
         </CardList>
       ) : (
-        <EmptyHistoryState />
+        <EmptyHistoryState kind={emptyStateKind} />
       )}
     </HistorySection>
   );
