@@ -35,12 +35,14 @@ function App() {
   const [historyRecords, setHistoryRecords] = useState<CheckInHistoryRecord[]>(() =>
     loadCheckInHistory()
   );
+  const [historyWasCleared, setHistoryWasCleared] = useState(false);
   const companionDayCount = getCompanionDayCount(historyRecords);
   const companionDaysMessage =
     companionDayCount > 0
       ? `小電量獸陪你 ${companionDayCount} 天了`
-      : "小電量獸會從今天開始陪你。";
+      : "小電量獸今天先在旁邊待機，等你想靠近再開始。";
   const batteryTrailDays = getRecentBatteryTrail(historyRecords);
+  const emptyHistoryKind = historyWasCleared ? "cleared" : "first-use";
 
   const handleContextToggle = (contextTag: ContextTag) => {
     setSelectedContextTags((currentTags) =>
@@ -75,6 +77,7 @@ function App() {
       createdAt
     });
     setHistoryRecords(records);
+    setHistoryWasCleared(false);
 
     setPreviewState({
       petState,
@@ -89,6 +92,7 @@ function App() {
   const handleClearHistory = () => {
     clearCheckInHistory();
     setHistoryRecords([]);
+    setHistoryWasCleared(true);
   };
 
   return (
@@ -109,7 +113,11 @@ function App() {
           onSubmit={handleSubmit}
         />
         <StatePreview previewState={previewState} />
-        <HistoryList records={historyRecords} onClear={handleClearHistory} />
+        <HistoryList
+          records={historyRecords}
+          emptyStateKind={emptyHistoryKind}
+          onClear={handleClearHistory}
+        />
       </RetroDeviceFrame>
     </PageShell>
   );

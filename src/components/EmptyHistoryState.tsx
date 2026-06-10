@@ -1,9 +1,32 @@
-import { EmptyState } from "./EmptyHistoryState.styles";
+import { EmptyBody, EmptyIcon, EmptyState, EmptyTitle } from "./EmptyHistoryState.styles";
 
-function EmptyHistoryState() {
+export type EmptyHistoryStateKind = "first-use" | "cleared";
+
+const emptyStateCopy = {
+  "first-use": {
+    icon: "･ﾟ",
+    title: "樹洞還空著",
+    body: "還沒有被接住的紀錄。先完成一次 10 秒 check-in，小電量獸就會把今天輕輕收好。"
+  },
+  cleared: {
+    icon: "○",
+    title: "紀錄已經放下了",
+    body: "這裡先變安靜。下一次想回來時，可以重新留下今天的電量。"
+  }
+} satisfies Record<EmptyHistoryStateKind, { icon: string; title: string; body: string }>;
+
+interface EmptyHistoryStateProps {
+  kind: EmptyHistoryStateKind;
+}
+
+function EmptyHistoryState({ kind }: EmptyHistoryStateProps) {
+  const copy = emptyStateCopy[kind];
+
   return (
     <EmptyState>
-      <p>還沒有被接住的紀錄。</p>
+      <EmptyIcon aria-hidden="true">{copy.icon}</EmptyIcon>
+      <EmptyTitle>{copy.title}</EmptyTitle>
+      <EmptyBody>{copy.body}</EmptyBody>
     </EmptyState>
   );
 }
