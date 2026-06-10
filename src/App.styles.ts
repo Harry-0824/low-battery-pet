@@ -56,6 +56,38 @@ export const CompanionDaysNote = styled.p`
   }
 `;
 
+export const FirstUseGuide = styled.section`
+  display: grid;
+  gap: 10px;
+  margin: -8px 0 22px;
+  border: 1px solid #d8b58a;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fffdf8;
+  color: #5f3216;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  ol {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  li {
+    line-height: 1.5;
+  }
+
+  @media (max-width: 420px) {
+    margin: -4px 0 16px;
+    padding: 10px;
+  }
+`;
+
 export const PetMemoryNote = styled.p`
   margin: -10px 0 22px;
   border: 1px solid #d8b58a;
