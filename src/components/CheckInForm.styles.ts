@@ -2,12 +2,20 @@ import styled from "styled-components";
 
 export const Form = styled.form`
   display: grid;
-  gap: 22px;
+  gap: 16px;
+  border: 1px solid #d7dde6;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f8fafc;
 `;
 
 export const Section = styled.section`
   display: grid;
   gap: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #ffffff;
 
   h2 {
     margin: 0;
