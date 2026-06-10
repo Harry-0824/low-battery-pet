@@ -86,7 +86,7 @@ describe("App", () => {
     expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
       true
     );
-    expect(screen.getByText("先選一個今天的電量")).toBeTruthy();
+    expect(screen.getByText("先選一個最像今天的電量")).toBeTruthy();
   });
 
   it("lets the user select one mood option", () => {
@@ -105,7 +105,7 @@ describe("App", () => {
   it("lets the user toggle a context tag", () => {
     render(<App />);
 
-    const walletButton = screen.getByRole("button", { name: "錢包壓力" });
+    const walletButton = screen.getByRole("button", { name: "錢包有壓力" });
     fireEvent.click(walletButton);
 
     expect(walletButton.getAttribute("aria-pressed")).toBe("true");
@@ -119,7 +119,7 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "快沒電" }));
-    fireEvent.click(screen.getByRole("button", { name: "錢包壓力" }));
+    fireEvent.click(screen.getByRole("button", { name: "錢包有壓力" }));
     fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
     const result = screen.getByTestId("check-in-result");
@@ -159,7 +159,7 @@ describe("App", () => {
 
     const noteInput = screen.getByLabelText("想丟進樹洞的話");
     const moodButton = screen.getByRole("button", { name: "快沒電" });
-    const contextButton = screen.getByRole("button", { name: "錢包壓力" });
+    const contextButton = screen.getByRole("button", { name: "錢包有壓力" });
 
     fireEvent.change(noteInput, {
       target: { value: "Need a small plan" }
@@ -174,7 +174,7 @@ describe("App", () => {
     expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
       true
     );
-    expect(screen.getByText("先選一個今天的電量")).toBeTruthy();
+    expect(screen.getByText("先選一個最像今天的電量")).toBeTruthy();
     expect(screen.getByTestId("check-in-result")).toBeTruthy();
   });
 
@@ -183,7 +183,7 @@ describe("App", () => {
 
     expect(screen.getByText("最近被接住的時候")).toBeTruthy();
     expect(screen.getByText("樹洞還空著")).toBeTruthy();
-    expect(screen.getByText(/選一個電量、需要的話留一句話/)).toBeTruthy();
+    expect(screen.getByText(/先選一個電量、需要的話留一句話/)).toBeTruthy();
   });
 
   it("shows a gentle first-use companion-days message with no history", () => {
@@ -199,7 +199,7 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "第一次靠近小電量獸" })).toBeTruthy();
     expect(screen.getByText("先選一個最像今天的電量。")).toBeTruthy();
-    expect(screen.getByText("有卡住的事可以點一下，也可以把樹洞留空。")).toBeTruthy();
+    expect(screen.getByText("有卡住的地方可以點一下，也可以把樹洞留空。")).toBeTruthy();
     expect(screen.getByText("送出後，牠會留一句話和一個很小的行動。")).toBeTruthy();
   });
 
@@ -242,7 +242,7 @@ describe("App", () => {
 
     const trail = screen.getByTestId("battery-trail");
     expect(screen.getByText("最近 7 天的小電量足跡")).toBeTruthy();
-    expect(screen.getByText("有記錄的日子會亮一下，空白也沒關係。")).toBeTruthy();
+    expect(screen.getByText("有紀錄的日子會亮一下，空白也可以慢慢來。")).toBeTruthy();
     expect(within(trail).getAllByTestId("battery-trail-day")).toHaveLength(7);
     expect(within(trail).getByText("快沒電")).toBeTruthy();
     expect(within(trail).getByText("低電量")).toBeTruthy();

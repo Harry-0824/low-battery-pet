@@ -23,7 +23,7 @@ const batteryTrailCopy = {
   },
   empty: {
     label: "慢慢來",
-    title: "那天沒有留下紀錄，也沒關係"
+    title: "那天沒有留下紀錄，也可以慢慢來"
   }
 } satisfies Record<BatteryTrailEnergyLevel, { label: string; title: string }>;
 
@@ -35,7 +35,7 @@ function BatteryTrail({ days }: BatteryTrailProps) {
   return (
     <TrailSection aria-label="最近 7 天的小電量足跡" data-testid="battery-trail">
       <h2>最近 7 天的小電量足跡</h2>
-      <TrailIntro>有記錄的日子會亮一下，空白也沒關係。</TrailIntro>
+      <TrailIntro>有紀錄的日子會亮一下，空白也可以慢慢來。</TrailIntro>
       <TrailGrid>
         {days.map((day) => {
           const copy = batteryTrailCopy[day.energyLevel];

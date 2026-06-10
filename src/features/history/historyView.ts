@@ -9,10 +9,10 @@ const moodSummary = {
 } satisfies Record<CheckInHistoryRecord["moodTag"], string>;
 
 const contextSummary = {
-  wallet_pressure: "錢包壓力",
-  work_stress: "工作爆炸",
+  wallet_pressure: "錢包有壓力",
+  work_stress: "工作太滿",
   social_fatigue: "社交疲勞",
-  dinner_problem: "晚餐選擇",
+  dinner_problem: "晚餐不知道",
   want_to_rest: "想躺著"
 } satisfies Record<CheckInHistoryRecord["contextTags"][number], string>;
 

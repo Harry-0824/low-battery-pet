@@ -17,7 +17,7 @@ function TreeTextInput({ value, onChange }: TreeTextInputProps) {
           {value.length}/120
         </TextCounter>
       </TextHeader>
-      <DrawerNote id={noteHelpId}>這裡可以很小聲。留一句、留半句，或先讓它空著都可以。</DrawerNote>
+      <DrawerNote id={noteHelpId}>這裡可以很小聲。留一句、留半句，或先空著都可以。</DrawerNote>
       <TextArea
         aria-describedby={`${noteHelpId} ${noteCounterId}`}
         id="check-in-note"
@@ -25,7 +25,7 @@ function TreeTextInput({ value, onChange }: TreeTextInputProps) {
         rows={3}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="把今天卡住的一點點丟進來。"
+        placeholder="把今天的一點點放進來。"
       />
     </Field>
   );

@@ -109,7 +109,7 @@ function App() {
       <RetroDeviceFrame>
         <Header>
           <h1>今天電量如何？</h1>
-          <p>選一下現在的狀態，讓小電量獸接住你。</p>
+          <p>選一個最像現在的電量，讓小電量獸接住你。</p>
         </Header>
         <CompanionDaysNote data-testid="companion-days">{companionDaysMessage}</CompanionDaysNote>
         {shouldShowFirstUseGuide ? (
@@ -117,7 +117,7 @@ function App() {
             <h2 id="first-use-guide-title">第一次靠近小電量獸</h2>
             <ol>
               <li>先選一個最像今天的電量。</li>
-              <li>有卡住的事可以點一下，也可以把樹洞留空。</li>
+              <li>有卡住的地方可以點一下，也可以把樹洞留空。</li>
               <li>送出後，牠會留一句話和一個很小的行動。</li>
             </ol>
           </FirstUseGuide>

@@ -11,10 +11,10 @@ const moodOptions: Array<{ value: MoodTag; label: string }> = [
 ];
 
 const contextOptions: Array<{ value: ContextTag; label: string }> = [
-  { value: "wallet_pressure", label: "錢包壓力" },
-  { value: "work_stress", label: "工作爆炸" },
+  { value: "wallet_pressure", label: "錢包有壓力" },
+  { value: "work_stress", label: "工作太滿" },
   { value: "social_fatigue", label: "社交疲勞" },
-  { value: "dinner_problem", label: "晚餐選擇" },
+  { value: "dinner_problem", label: "晚餐不知道" },
   { value: "want_to_rest", label: "想躺著" }
 ];
 
@@ -38,7 +38,7 @@ function CheckInForm({
 
   return (
     <Form
-      aria-label="今日電量 check-in"
+      aria-label="今天的小電量紀錄"
       onSubmit={(event) => {
         event.preventDefault();
         if (canSubmit) {
@@ -48,7 +48,7 @@ function CheckInForm({
     >
       <Section>
         <legend>今天的電量</legend>
-        {!canSubmit ? <HelperText id={moodHelperId}>先選一個今天的電量</HelperText> : null}
+        {!canSubmit ? <HelperText id={moodHelperId}>先選一個最像今天的電量</HelperText> : null}
         <ButtonGrid>
           {moodOptions.map((option) => (
             <TagButton
@@ -63,7 +63,7 @@ function CheckInForm({
       </Section>
 
       <Section>
-        <legend>今天卡住的事</legend>
+        <legend>今天卡住的地方</legend>
         <ButtonGrid>
           {contextOptions.map((option) => (
             <TagButton
