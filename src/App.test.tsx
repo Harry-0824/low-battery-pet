@@ -113,6 +113,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
     const result = screen.getByTestId("check-in-result");
+    expect(within(result).getByTestId("pixel-pet-visual").getAttribute("data-visual-state")).toBe(
+      "drained"
+    );
     expect(within(result).getByText("( x_x )")).toBeTruthy();
     expect(within(result).getByText("小電量獸快沒電了")).toBeTruthy();
     expect(screen.getByText("牠說")).toBeTruthy();

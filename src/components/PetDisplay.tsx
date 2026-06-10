@@ -1,5 +1,17 @@
 import type { PetState } from "../features/pet/petTypes";
-import { Display, PetFace, StatusText } from "./PetDisplay.styles";
+import {
+  Display,
+  PetFace,
+  PixelBattery,
+  PixelBody,
+  PixelCloud,
+  PixelCorner,
+  PixelEye,
+  PixelMouth,
+  PixelPetVisual,
+  PixelSpark,
+  StatusText
+} from "./PetDisplay.styles";
 
 interface PetDisplayProps {
   petState: PetState;
@@ -10,16 +22,59 @@ interface PetDisplayCopy {
   status: string;
 }
 
+type PetVisualState = "okay" | "drained" | "overloaded" | "lonely" | "low";
+
 function PetDisplay({ petState }: PetDisplayProps) {
   const display = getPetDisplay(petState);
+  const visualState = getPetVisualState(petState);
 
   return (
     <Display aria-label="小電量獸狀態">
+      <PixelPetVisual
+        aria-hidden="true"
+        data-testid="pixel-pet-visual"
+        data-visual-state={visualState}
+      >
+        <PixelCloud />
+        <PixelSpark $placement="left" />
+        <PixelSpark $placement="right" />
+        <PixelBattery />
+        <PixelCorner />
+        <PixelBody>
+          <PixelEye $side="left" />
+          <PixelEye $side="right" />
+          <PixelMouth />
+        </PixelBody>
+      </PixelPetVisual>
       <PetFace aria-hidden="true">{display.face}</PetFace>
       <StatusText>{display.status}</StatusText>
     </Display>
   );
 }
+
+export const getPetVisualState = (petState: PetState): PetVisualState => {
+  if (petState.mood === "low_power" || petState.effect === "low_battery") {
+    return "drained";
+  }
+
+  if (
+    petState.mood === "stressed" ||
+    petState.effect === "black_cloud" ||
+    petState.animation === "shake"
+  ) {
+    return "overloaded";
+  }
+
+  if (petState.mood === "lonely" || petState.animation === "hide") {
+    return "lonely";
+  }
+
+  if (petState.mood === "grumpy" || petState.accessory === "coin") {
+    return "low";
+  }
+
+  return "okay";
+};
 
 export const getPetDisplay = (petState: PetState): PetDisplayCopy => {
   if (petState.accessory === "rice_ball") {
