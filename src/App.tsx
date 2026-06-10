@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-import { CompanionDaysNote, Header, PageShell, PetMemoryNote } from "./App.styles";
+import {
+  CompanionDaysNote,
+  FirstUseGuide,
+  Header,
+  PageShell,
+  PetMemoryNote
+} from "./App.styles";
 import BatteryTrail from "./components/BatteryTrail";
 import CheckInForm from "./components/CheckInForm";
 import HistoryList from "./components/HistoryList";
@@ -45,6 +51,7 @@ function App() {
   const batteryTrailDays = getRecentBatteryTrail(historyRecords);
   const petMemoryMessage = getPetStateMemoryMessage(historyRecords);
   const emptyHistoryKind = historyWasCleared ? "cleared" : "first-use";
+  const shouldShowFirstUseGuide = historyRecords.length === 0 && !historyWasCleared;
 
   const handleContextToggle = (contextTag: ContextTag) => {
     setSelectedContextTags((currentTags) =>
@@ -105,6 +112,16 @@ function App() {
           <p>選一下現在的狀態，讓小電量獸接住你。</p>
         </Header>
         <CompanionDaysNote data-testid="companion-days">{companionDaysMessage}</CompanionDaysNote>
+        {shouldShowFirstUseGuide ? (
+          <FirstUseGuide aria-labelledby="first-use-guide-title">
+            <h2 id="first-use-guide-title">第一次靠近小電量獸</h2>
+            <ol>
+              <li>先選一個最像今天的電量。</li>
+              <li>有卡住的事可以點一下，也可以把樹洞留空。</li>
+              <li>送出後，牠會留一句話和一個很小的行動。</li>
+            </ol>
+          </FirstUseGuide>
+        ) : null}
         {petMemoryMessage ? (
           <PetMemoryNote data-testid="pet-state-memory">{petMemoryMessage}</PetMemoryNote>
         ) : null}

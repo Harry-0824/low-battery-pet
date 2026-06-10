@@ -183,7 +183,7 @@ describe("App", () => {
 
     expect(screen.getByText("最近被接住的時候")).toBeTruthy();
     expect(screen.getByText("樹洞還空著")).toBeTruthy();
-    expect(screen.getByText(/還沒有被接住的紀錄。/)).toBeTruthy();
+    expect(screen.getByText(/選一個電量、需要的話留一句話/)).toBeTruthy();
   });
 
   it("shows a gentle first-use companion-days message with no history", () => {
@@ -192,6 +192,24 @@ describe("App", () => {
     expect(screen.getByTestId("companion-days").textContent).toBe(
       "小電量獸今天先在旁邊待機，等你想靠近再開始。"
     );
+  });
+
+  it("shows first-use guidance before the first check-in", () => {
+    render(<App />);
+
+    expect(screen.getByRole("heading", { name: "第一次靠近小電量獸" })).toBeTruthy();
+    expect(screen.getByText("先選一個最像今天的電量。")).toBeTruthy();
+    expect(screen.getByText("有卡住的事可以點一下，也可以把樹洞留空。")).toBeTruthy();
+    expect(screen.getByText("送出後，牠會留一句話和一個很小的行動。")).toBeTruthy();
+  });
+
+  it("hides first-use guidance after a check-in", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "還行" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
+
+    expect(screen.queryByRole("heading", { name: "第一次靠近小電量獸" })).toBeNull();
   });
 
   it("shows companion days from unique check-in dates", () => {

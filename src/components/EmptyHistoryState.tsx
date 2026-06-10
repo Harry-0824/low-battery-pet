@@ -6,7 +6,7 @@ const emptyStateCopy = {
   "first-use": {
     icon: "･ﾟ",
     title: "樹洞還空著",
-    body: "還沒有被接住的紀錄。先完成一次 10 秒 check-in，小電量獸就會把今天輕輕收好。"
+    body: "還沒有被接住的紀錄。選一個電量、需要的話留一句話，小電量獸就會把今天輕輕收好。"
   },
   cleared: {
     icon: "○",
