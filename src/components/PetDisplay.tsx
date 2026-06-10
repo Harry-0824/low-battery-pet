@@ -115,7 +115,7 @@ export const getPetDisplay = (petState: PetState): PetDisplayCopy => {
   if (petState.effect === "black_cloud") {
     return {
       face: "( @_@ )",
-      status: "小電量獸腦袋當機"
+      status: "小電量獸腦袋空白"
     };
   }
 
