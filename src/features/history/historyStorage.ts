@@ -4,6 +4,7 @@ export const CHECK_IN_HISTORY_STORAGE_KEY = "low-battery-pet:check-ins";
 
 const MAX_HISTORY_RECORDS = 30;
 const RECENT_BATTERY_TRAIL_DAYS = 7;
+const PET_MEMORY_RECORD_LIMIT = 4;
 
 export type BatteryTrailEnergyLevel =
   | CheckInHistoryRecord["derivedUserState"]["energyLevel"]
@@ -44,6 +45,32 @@ export const clearCheckInHistory = () => {
 export const getCompanionDayCount = (records: CheckInHistoryRecord[]) =>
   new Set(records.map((record) => getLocalDateKey(record.createdAt))).size;
 
+export const getPetStateMemoryMessage = (records: CheckInHistoryRecord[]) => {
+  const recentRecords = sortNewestFirst(records).slice(0, PET_MEMORY_RECORD_LIMIT);
+
+  if (recentRecords.length < 2) {
+    return null;
+  }
+
+  const [latestRecord, ...olderRecords] = recentRecords;
+  const tiredRecords = recentRecords.filter((record) => isLowPowerRecord(record));
+  const olderTiredRecords = olderRecords.filter((record) => isLowPowerRecord(record));
+
+  if (latestRecord.derivedUserState.energyLevel === "normal" && olderTiredRecords.length > 0) {
+    return "這幾天有稍微回充一點點。那一點點也會被小電量獸記得。";
+  }
+
+  if (tiredRecords.length >= 2) {
+    return "最近好像常常在省電模式。小電量獸會把燈開小一點，陪你慢慢待著。";
+  }
+
+  if (olderTiredRecords.length > 0) {
+    return "前幾天看起來比較累。今天先不用急著變好。";
+  }
+
+  return "小電量獸記得這幾天你有來過。慢慢來就好。";
+};
+
 export const getRecentBatteryTrail = (
   records: CheckInHistoryRecord[],
   referenceDate = new Date()
@@ -76,6 +103,10 @@ const sortNewestFirst = (records: CheckInHistoryRecord[]) => [...records].sort(c
 
 const compareNewestFirst = (first: CheckInHistoryRecord, second: CheckInHistoryRecord) =>
   second.createdAt.localeCompare(first.createdAt);
+
+const isLowPowerRecord = (record: CheckInHistoryRecord) =>
+  record.derivedUserState.energyLevel === "low" ||
+  record.derivedUserState.energyLevel === "critical";
 
 const getLocalDateKey = (createdAt: string | Date) => {
   const date = new Date(createdAt);
