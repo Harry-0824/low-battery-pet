@@ -5,17 +5,21 @@ import {
   CHECK_IN_HISTORY_STORAGE_KEY,
   clearCheckInHistory,
   getCompanionDayCount,
+  getRecentBatteryTrail,
   loadCheckInHistory,
   saveCheckInRecord
 } from "./historyStorage";
 
-const createRecord = (createdAt: string): CheckInHistoryRecord => ({
+const createRecord = (
+  createdAt: string,
+  energyLevel: CheckInHistoryRecord["derivedUserState"]["energyLevel"] = "normal"
+): CheckInHistoryRecord => ({
   moodTag: "okay",
   contextTags: ["want_to_rest"],
   shortText: "Small note",
   derivedUserState: {
     mood: "neutral",
-    energyLevel: "normal",
+    energyLevel,
     stressLevel: "low",
     needsComfort: false,
     hasWalletPressure: false,
@@ -86,5 +90,49 @@ describe("historyStorage", () => {
     ];
 
     expect(getCompanionDayCount(records)).toBe(2);
+  });
+
+  it("builds a seven-day battery trail ending on the reference date", () => {
+    const trail = getRecentBatteryTrail(
+      [
+        createRecord("2026-06-10T09:00:00", "normal"),
+        createRecord("2026-06-09T09:00:00", "low"),
+        createRecord("2026-06-04T09:00:00", "critical"),
+        createRecord("2026-06-03T09:00:00", "critical")
+      ],
+      new Date("2026-06-10T12:00:00")
+    );
+
+    expect(trail).toHaveLength(7);
+    expect(trail.map((day) => day.dateKey)).toEqual([
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-10"
+    ]);
+    expect(trail.map((day) => day.energyLevel)).toEqual([
+      "critical",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "low",
+      "normal"
+    ]);
+  });
+
+  it("uses the latest check-in when a day has multiple records", () => {
+    const trail = getRecentBatteryTrail(
+      [
+        createRecord("2026-06-10T08:00:00", "normal"),
+        createRecord("2026-06-10T20:00:00", "critical")
+      ],
+      new Date("2026-06-10T21:00:00")
+    );
+
+    expect(trail[6].energyLevel).toBe("critical");
   });
 });
