@@ -1,5 +1,5 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { saveCheckInRecord } from "./features/history/historyStorage";
 import type { CheckInHistoryRecord } from "./features/history/historyTypes";
@@ -49,6 +49,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
 });
 
 describe("App", () => {
@@ -171,11 +172,39 @@ describe("App", () => {
     expect((noteInput as HTMLTextAreaElement).value).toBe("");
     expect(moodButton.getAttribute("aria-pressed")).toBe("false");
     expect(contextButton.getAttribute("aria-pressed")).toBe("false");
+    expect((screen.getByRole("button", { name: "收集中..." }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+    expect(screen.getByText("小電量獸正在收集今天的一點點。")).toBeTruthy();
+    expect(screen.getByTestId("check-in-result")).toBeTruthy();
+  });
+
+  it("briefly shows collecting feedback while keeping the submitted preview", () => {
+    vi.useFakeTimers();
+    render(<App />);
+
+    const noteInput = screen.getByLabelText("想丟進樹洞的話");
+
+    fireEvent.change(noteInput, {
+      target: { value: "Need a small plan" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "快沒電" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
+
+    const collectingButton = screen.getByRole("button", { name: "收集中..." });
+    expect((collectingButton as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText("小電量獸正在收集今天的一點點。")).toBeTruthy();
+    expect((noteInput as HTMLTextAreaElement).value).toBe("");
+    expect(screen.getByTestId("check-in-result")).toBeTruthy();
+
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+
     expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
       true
     );
     expect(screen.getByText("先選一個最像今天的電量")).toBeTruthy();
-    expect(screen.getByTestId("check-in-result")).toBeTruthy();
   });
 
   it("shows an empty history state when no records exist", () => {

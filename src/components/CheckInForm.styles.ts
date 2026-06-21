@@ -61,6 +61,7 @@ export const SubmitButton = styled.button`
   cursor: pointer;
   font: inherit;
   font-weight: 800;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease, opacity 160ms ease;
 
   &:hover:not(:disabled) {
     background: #e5773f;
@@ -74,5 +75,12 @@ export const SubmitButton = styled.button`
   &:disabled {
     cursor: not-allowed;
     opacity: 0.65;
+  }
+
+  &[aria-busy="true"] {
+    background: #d97f4c;
+    box-shadow: inset 0 0 0 2px rgba(255, 247, 237, 0.28);
+    opacity: 0.88;
+    transform: translateY(1px);
   }
 `;
