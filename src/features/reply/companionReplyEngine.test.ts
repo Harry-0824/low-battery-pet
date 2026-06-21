@@ -84,6 +84,47 @@ describe("generateCompanionReply", () => {
     expect(generateCompanionReply(input)).toEqual(generateCompanionReply(input));
   });
 
+  it.each([
+    {
+      moodTag: "no_thoughts" as const,
+      contextTags: ["work_stress"] as const,
+      expectedReply:
+        "今天腦袋被工作塞滿了也沒關係，小電量獸先陪你把下一步縮小到一口氣。"
+    },
+    {
+      moodTag: "low_battery" as const,
+      contextTags: ["wallet_pressure"] as const,
+      expectedReply:
+        "錢包壓力和低電量一起來時，先不用解決全部；我們先守住今天最小的一步。"
+    },
+    {
+      moodTag: "low_battery" as const,
+      contextTags: ["dinner_problem"] as const,
+      expectedReply:
+        "低電量還要想晚餐真的很累，先選一個最不用思考的東西讓身體有電。"
+    },
+    {
+      moodTag: "lonely" as const,
+      contextTags: ["social_fatigue"] as const,
+      expectedReply:
+        "想休息又覺得孤單的時候，可以先安靜待著；小電量獸會在旁邊陪你，不催你聊天。"
+    },
+    {
+      moodTag: "lonely" as const,
+      contextTags: ["want_to_rest"] as const,
+      expectedReply:
+        "想休息又覺得孤單的時候，可以先安靜待著；小電量獸會在旁邊陪你，不催你聊天。"
+    }
+  ])("uses an integrated reply for $moodTag with $contextTags", ({
+    moodTag,
+    contextTags,
+    expectedReply
+  }) => {
+    expect(generateCompanionReply(createInput(moodTag, [...contextTags])).reply).toBe(
+      expectedReply
+    );
+  });
+
   it("uses the wallet pressure tiny action when wallet pressure is present", () => {
     expect(generateCompanionReply(createInput("okay", ["wallet_pressure"]))).toMatchObject({
       tinyAction: "只看一眼下一個到期日，看完就讓它先躺著。"

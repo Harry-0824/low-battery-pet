@@ -1,5 +1,5 @@
 import { deriveUserState } from "../checkIn/deriveUserState";
-import type { MoodTag } from "../checkIn/checkInTypes";
+import type { ContextTag, MoodTag } from "../checkIn/checkInTypes";
 import { calculatePetState } from "../pet/petStateEngine";
 import type { PetMoodState } from "../pet/petTypes";
 import type { CompanionReply, CompanionReplyInput, ReplyTone } from "./replyTypes";
@@ -92,9 +92,10 @@ export const generateCompanionReply = (input: CompanionReplyInput): CompanionRep
   const moodTemplate = moodTemplates[input.moodTag];
   const note = input.shortText?.trim();
   const seedParts = [input.moodTag, ...input.contextTags, note ?? ""];
+  const contextAwareReply = composeContextAwareReply(input);
 
   return {
-    reply: selectVariant(moodTemplate.replies, seedParts),
+    reply: contextAwareReply ?? selectVariant(moodTemplate.replies, seedParts),
     petLine: selectVariant(petLineTemplates[petState.mood], [
       petState.mood,
       ...seedParts
@@ -104,6 +105,36 @@ export const generateCompanionReply = (input: CompanionReplyInput): CompanionRep
     ...(note ? { note } : {})
   };
 };
+
+const composeContextAwareReply = (
+  input: CompanionReplyInput
+): string | undefined => {
+  if (input.moodTag === "no_thoughts" && hasContext(input, "work_stress")) {
+    return "今天腦袋被工作塞滿了也沒關係，小電量獸先陪你把下一步縮小到一口氣。";
+  }
+
+  if (input.moodTag === "low_battery" && hasContext(input, "wallet_pressure")) {
+    return "錢包壓力和低電量一起來時，先不用解決全部；我們先守住今天最小的一步。";
+  }
+
+  if (input.moodTag === "low_battery" && hasContext(input, "dinner_problem")) {
+    return "低電量還要想晚餐真的很累，先選一個最不用思考的東西讓身體有電。";
+  }
+
+  if (
+    input.moodTag === "lonely" &&
+    (hasContext(input, "social_fatigue") || hasContext(input, "want_to_rest"))
+  ) {
+    return "想休息又覺得孤單的時候，可以先安靜待著；小電量獸會在旁邊陪你，不催你聊天。";
+  }
+
+  return undefined;
+};
+
+const hasContext = (
+  input: CompanionReplyInput,
+  contextTag: ContextTag
+): boolean => input.contextTags.includes(contextTag);
 
 const selectVariant = (variants: string[], seedParts: string[]): string => {
   const seed = seedParts.join("|");

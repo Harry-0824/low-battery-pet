@@ -129,7 +129,9 @@ describe("App", () => {
     expect(within(result).getByText("( x_x )")).toBeTruthy();
     expect(within(result).getByText("小電量獸快沒電了")).toBeTruthy();
     expect(screen.getByText("牠說")).toBeTruthy();
-    expect(screen.getByText("今天先不要跑太遠。我會趴在充電線旁邊等你。")).toBeTruthy();
+    expect(
+      screen.getByText("錢包壓力和低電量一起來時，先不用解決全部；我們先守住今天最小的一步。")
+    ).toBeTruthy();
     expect(screen.getByText("一件小事")).toBeTruthy();
     expect(screen.getByText("只看一眼下一個到期日，看完就讓它先躺著。")).toBeTruthy();
     expect(screen.queryByText("State preview")).toBeNull();
