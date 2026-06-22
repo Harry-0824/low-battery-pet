@@ -29,7 +29,9 @@ function RetroDeviceFrame({
           <StatusLight />
         </StatusLights>
       </DeviceHeader>
-      <DeviceScreen data-testid="retro-device-screen">{children}</DeviceScreen>
+      <DeviceScreen $isFeedbackActive={isFeedbackActive} data-testid="retro-device-screen">
+        {children}
+      </DeviceScreen>
       <DeviceControls aria-hidden="true">
         <DPad>
           <DPadLine />
