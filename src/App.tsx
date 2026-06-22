@@ -42,6 +42,8 @@ interface PreviewState {
   companionReply: CompanionReply;
 }
 
+const SUBMIT_FEEDBACK_DURATION_MS = 900;
+
 function App() {
   const [selectedMoodTag, setSelectedMoodTag] = useState<MoodTag | null>(null);
   const [selectedContextTags, setSelectedContextTags] = useState<ContextTag[]>([]);
@@ -150,7 +152,7 @@ function App() {
     submitFeedbackTimeoutRef.current = window.setTimeout(() => {
       setIsSubmitFeedbackActive(false);
       submitFeedbackTimeoutRef.current = null;
-    }, 650);
+    }, SUBMIT_FEEDBACK_DURATION_MS);
   };
 
   const handleClearHistory = () => {

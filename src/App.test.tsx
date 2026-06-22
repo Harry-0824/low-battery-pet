@@ -275,6 +275,34 @@ describe("App", () => {
     expect(screen.getByText("先選一個最像今天的電量")).toBeTruthy();
   });
 
+  it("keeps submit feedback visible for about 900ms", () => {
+    vi.useFakeTimers();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "快沒電" }));
+    fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
+
+    expect((screen.getByRole("button", { name: "收集中..." }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(899);
+    });
+
+    expect((screen.getByRole("button", { name: "收集中..." }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+
+    expect((screen.getByRole("button", { name: "讓小電量獸接住我" }) as HTMLButtonElement).disabled).toBe(
+      true
+    );
+  });
+
   it("shows an empty history state when no records exist", () => {
     render(<App />);
 

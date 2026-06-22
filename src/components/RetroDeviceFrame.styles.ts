@@ -64,7 +64,7 @@ export const DeviceShell = styled.div<{ $isFeedbackActive?: boolean }>`
     $isFeedbackActive
       ? css`
           &::after {
-            animation: ${shellRipple} 650ms ease-out;
+            animation: ${shellRipple} 900ms ease-out;
           }
         `
       : null}
@@ -119,11 +119,11 @@ export const StatusLights = styled.div<{ $isFeedbackActive?: boolean }>`
     $isFeedbackActive
       ? css`
           ${StatusLight} {
-            animation: ${lightPulse} 650ms ease-out;
+            animation: ${lightPulse} 900ms ease-out;
           }
 
           ${StatusLight}:nth-child(2) {
-            animation-delay: 90ms;
+            animation-delay: 120ms;
           }
         `
       : null}
@@ -135,19 +135,33 @@ export const StatusLights = styled.div<{ $isFeedbackActive?: boolean }>`
   }
 `;
 
-export const DeviceScreen = styled.div`
+export const DeviceScreen = styled.div<{ $isFeedbackActive?: boolean }>`
   max-height: 72vh;
   overflow-y: auto;
   border: 3px solid #243142;
   border-radius: 14px;
   padding: 18px;
   background: #f8fafc;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+
+  ${({ $isFeedbackActive }) =>
+    $isFeedbackActive
+      ? css`
+          border-color: #d97f4c;
+          background: #fff7ed;
+          box-shadow: inset 0 0 0 2px rgba(246, 198, 103, 0.38);
+        `
+      : null}
 
   @media (max-width: 420px) {
     max-height: 76vh;
     border-width: 2px;
     border-radius: 12px;
     padding: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 `;
 
