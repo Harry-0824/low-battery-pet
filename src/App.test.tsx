@@ -530,6 +530,9 @@ describe("App", () => {
 
     saveCheckInRecord(createHistoryRecord(getDateHoursAgo(8)));
     render(<App />);
+    expect(screen.getByTestId("follow-up-reminder").getAttribute("aria-labelledby")).toBe(
+      "follow-up-reminder-title"
+    );
     expect(screen.getByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeTruthy();
     expect(screen.getByRole("button", { name: "還是有點難" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "好一點點" })).toBeTruthy();
@@ -557,5 +560,13 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
+  });
+
+  it("keeps history card delete actions available by button role", () => {
+    saveCheckInRecord(createHistoryRecord("2026-06-22T08:00:00", "low"));
+    render(<App />);
+
+    expect(screen.getByTestId("history-card")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /清除 .* 的紀錄/ })).toBeTruthy();
   });
 });

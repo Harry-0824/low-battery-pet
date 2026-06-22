@@ -46,8 +46,9 @@ export const ButtonGrid = styled.div`
 
 export const HelperText = styled.p`
   margin: 0;
-  color: #8a4b21;
-  font-size: 0.9rem;
+  color: #7c2d12;
+  font-size: 0.94rem;
+  font-weight: 700;
   line-height: 1.45;
 `;
 

@@ -7,6 +7,23 @@ export const Card = styled.article`
   border-radius: 8px;
   padding: 14px;
   background: #ffffff;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+
+  &:hover,
+  &:focus-within {
+    border-color: #f6c667;
+    box-shadow: 0 8px 18px rgba(36, 49, 66, 0.1);
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
+  }
 `;
 
 export const CardHeader = styled.div`
