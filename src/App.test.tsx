@@ -128,6 +128,22 @@ describe("App", () => {
     expect(walletButton.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("keeps the lonely mood and rest context visibly selected through aria state", () => {
+    render(<App />);
+
+    const lonelyButton = screen.getByRole("button", { name: "有點孤單" });
+    const restButton = screen.getByRole("button", { name: "想躺著" });
+
+    fireEvent.click(lonelyButton);
+    fireEvent.click(restButton);
+
+    expect(lonelyButton.getAttribute("aria-pressed")).toBe("true");
+    expect(restButton.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "還行" }).getAttribute("aria-pressed")).toBe(
+      "false"
+    );
+  });
+
   it("submits the check-in and displays a user-facing text pet result", () => {
     render(<App />);
 

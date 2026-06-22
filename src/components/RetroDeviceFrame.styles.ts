@@ -157,6 +157,9 @@ export const DeviceControls = styled.div`
   justify-content: space-between;
   gap: 18px;
   margin-top: 18px;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
 
   @media (max-width: 420px) {
     margin-top: 12px;
@@ -167,6 +170,7 @@ export const DPad = styled.div`
   position: relative;
   width: 64px;
   height: 64px;
+  cursor: default;
 
   @media (max-width: 420px) {
     width: 52px;
@@ -179,6 +183,7 @@ export const DPadLine = styled.span<{ $vertical?: boolean }>`
   inset: ${({ $vertical }) => ($vertical ? "4px 24px" : "24px 4px")};
   border-radius: 8px;
   background: #243142;
+  cursor: default;
 
   @media (max-width: 420px) {
     inset: ${({ $vertical }) => ($vertical ? "4px 20px" : "20px 4px")};
@@ -192,6 +197,7 @@ export const RoundButton = styled.span`
   border-radius: 999px;
   background: #e76f51;
   box-shadow: inset 0 -5px 0 rgba(36, 49, 66, 0.18);
+  cursor: default;
 
   @media (max-width: 420px) {
     width: 32px;
