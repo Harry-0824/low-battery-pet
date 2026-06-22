@@ -1,8 +1,9 @@
 import type { CheckInHistoryRecord } from "./historyTypes";
 
 export const CHECK_IN_HISTORY_STORAGE_KEY = "low-battery-pet:check-ins";
+export const CHECK_IN_HISTORY_RECORD_LIMIT = 30;
+export const CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD = CHECK_IN_HISTORY_RECORD_LIMIT - 3;
 
-const MAX_HISTORY_RECORDS = 30;
 const RECENT_BATTERY_TRAIL_DAYS = 7;
 const PET_MEMORY_RECORD_LIMIT = 4;
 
@@ -25,13 +26,13 @@ export const loadCheckInHistory = (): CheckInHistoryRecord[] => {
 
   const records = JSON.parse(storedValue) as CheckInHistoryRecord[];
 
-  return sortNewestFirst(records).slice(0, MAX_HISTORY_RECORDS);
+  return sortNewestFirst(records).slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
 };
 
 export const saveCheckInRecord = (record: CheckInHistoryRecord): CheckInHistoryRecord[] => {
   const records = [record, ...loadCheckInHistory()]
     .sort(compareNewestFirst)
-    .slice(0, MAX_HISTORY_RECORDS);
+    .slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
 
   localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify(records));
 

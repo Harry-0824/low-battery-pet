@@ -1,7 +1,10 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-import { saveCheckInRecord } from "./features/history/historyStorage";
+import {
+  CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD,
+  saveCheckInRecord
+} from "./features/history/historyStorage";
 import type { CheckInHistoryRecord } from "./features/history/historyTypes";
 
 const createHistoryRecord = (
@@ -305,6 +308,31 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getAllByTestId("history-card")).toHaveLength(3);
+  });
+
+  it("shows a soft cleanup hint when local history is near the record limit", () => {
+    for (let index = 0; index < CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD; index += 1) {
+      saveCheckInRecord(
+        createHistoryRecord(`2026-06-08T10:${String(index).padStart(2, "0")}:00.000Z`)
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getByText("只保留最近 30 筆，舊的會先睡進角落。")).toBeTruthy();
+    expect(screen.getAllByTestId("history-card")).toHaveLength(3);
+  });
+
+  it("does not show the cleanup hint before local history is near the record limit", () => {
+    for (let index = 0; index < CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD - 1; index += 1) {
+      saveCheckInRecord(
+        createHistoryRecord(`2026-06-08T10:${String(index).padStart(2, "0")}:00.000Z`)
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.queryByText("只保留最近 30 筆，舊的會先睡進角落。")).toBeNull();
   });
 
   it("clears saved history and updates the visible history state", () => {
