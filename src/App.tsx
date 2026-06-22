@@ -12,9 +12,16 @@ import CheckInForm from "./components/CheckInForm";
 import HistoryList from "./components/HistoryList";
 import RetroDeviceFrame from "./components/RetroDeviceFrame";
 import StatePreview from "./components/StatePreview";
+import TagButton from "./components/TagButton";
 import TreeTextInput from "./components/TreeTextInput";
 import type { ContextTag, MoodTag } from "./features/checkIn/checkInTypes";
 import { deriveUserState } from "./features/checkIn/deriveUserState";
+import {
+  FOLLOW_UP_OPTIONS,
+  getPendingFollowUpRecord,
+  loadFollowUpResponses,
+  saveFollowUpResponse
+} from "./features/history/followUpReminder";
 import {
   clearCheckInHistory,
   getCompanionDayCount,
@@ -23,7 +30,7 @@ import {
   loadCheckInHistory,
   saveCheckInRecord
 } from "./features/history/historyStorage";
-import type { CheckInHistoryRecord } from "./features/history/historyTypes";
+import type { CheckInHistoryRecord, FollowUpOption } from "./features/history/historyTypes";
 import type { PetState } from "./features/pet/petTypes";
 import { calculatePetState } from "./features/pet/petStateEngine";
 import { generateCompanionReply } from "./features/reply/companionReplyEngine";
@@ -44,6 +51,7 @@ function App() {
   const [historyRecords, setHistoryRecords] = useState<CheckInHistoryRecord[]>(() =>
     loadCheckInHistory()
   );
+  const [followUpResponses, setFollowUpResponses] = useState(() => loadFollowUpResponses());
   const [historyWasCleared, setHistoryWasCleared] = useState(false);
   const submitFeedbackTimeoutRef = useRef<number | null>(null);
   const companionDayCount = getCompanionDayCount(historyRecords);
@@ -55,6 +63,10 @@ function App() {
   const petMemoryMessage = getPetStateMemoryMessage(historyRecords);
   const emptyHistoryKind = historyWasCleared ? "cleared" : "first-use";
   const shouldShowFirstUseGuide = historyRecords.length === 0 && !historyWasCleared;
+  const pendingFollowUpRecord = getPendingFollowUpRecord(
+    historyRecords,
+    followUpResponses.map((response) => response.recordCreatedAt)
+  );
 
   useEffect(() => {
     return () => {
@@ -126,6 +138,14 @@ function App() {
     setHistoryWasCleared(true);
   };
 
+  const handleFollowUpSelect = (option: FollowUpOption) => {
+    if (!pendingFollowUpRecord) {
+      return;
+    }
+
+    setFollowUpResponses(saveFollowUpResponse(pendingFollowUpRecord.createdAt, option));
+  };
+
   return (
     <PageShell>
       <RetroDeviceFrame isFeedbackActive={isSubmitFeedbackActive}>
@@ -146,6 +166,22 @@ function App() {
         ) : null}
         {petMemoryMessage ? (
           <PetMemoryNote data-testid="pet-state-memory">{petMemoryMessage}</PetMemoryNote>
+        ) : null}
+        {pendingFollowUpRecord ? (
+          <section aria-labelledby="follow-up-reminder-title" data-testid="follow-up-reminder">
+            <p id="follow-up-reminder-title">小電量獸小聲問：剛剛那段時間，現在怎麼樣？</p>
+            <div>
+              {FOLLOW_UP_OPTIONS.map((option) => (
+                <TagButton
+                  key={option}
+                  describedBy="follow-up-reminder-title"
+                  isSelected={false}
+                  label={option}
+                  onClick={() => handleFollowUpSelect(option)}
+                />
+              ))}
+            </div>
+          </section>
         ) : null}
         <BatteryTrail days={batteryTrailDays} />
         <TreeTextInput value={shortText} onChange={setShortText} />

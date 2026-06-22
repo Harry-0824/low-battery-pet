@@ -11,3 +11,11 @@ export interface CheckInHistoryRecord {
   companionReply: CompanionReply;
   createdAt: string;
 }
+
+export type FollowUpOption = "還是有點難" | "好一點點" | "還不知道" | "不想說";
+
+export interface FollowUpResponse {
+  recordCreatedAt: string;
+  option: FollowUpOption;
+  answeredAt: string;
+}
