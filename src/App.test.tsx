@@ -46,6 +46,13 @@ const getDateDaysAgo = (daysAgo: number) => {
   return date.toISOString();
 };
 
+const getDateHoursAgo = (hoursAgo: number) => {
+  const date = new Date();
+  date.setHours(date.getHours() - hoursAgo);
+
+  return date.toISOString();
+};
+
 beforeEach(() => {
   localStorage.clear();
 });
@@ -353,5 +360,50 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "讓小電量獸接住我" }));
 
     expect(screen.getByTestId("history-card").textContent).toContain("還行");
+  });
+
+  it("only shows the follow-up prompt for the latest check-in from 6 to 12 hours ago", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-22T12:00:00.000Z"));
+
+    render(<App />);
+    expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
+    cleanup();
+
+    saveCheckInRecord(createHistoryRecord(getDateHoursAgo(5)));
+    render(<App />);
+    expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
+    cleanup();
+    localStorage.clear();
+
+    saveCheckInRecord(createHistoryRecord(getDateHoursAgo(8)));
+    render(<App />);
+    expect(screen.getByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "還是有點難" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "好一點點" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "還不知道" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "不想說" })).toBeTruthy();
+    cleanup();
+    localStorage.clear();
+
+    saveCheckInRecord(createHistoryRecord(getDateHoursAgo(13)));
+    render(<App />);
+    expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
+  });
+
+  it("keeps a selected follow-up option hidden for the same check-in after reload", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-22T12:00:00.000Z"));
+    saveCheckInRecord(createHistoryRecord(getDateHoursAgo(8)));
+
+    const { unmount } = render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "好一點點" }));
+    expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
+
+    unmount();
+    render(<App />);
+
+    expect(screen.queryByText("小電量獸小聲問：剛剛那段時間，現在怎麼樣？")).toBeNull();
   });
 });
