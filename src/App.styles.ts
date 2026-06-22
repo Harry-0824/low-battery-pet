@@ -5,8 +5,43 @@ export const PageShell = styled.main`
   margin: 0 auto;
   padding: 24px 14px 48px;
 
+  [data-testid="follow-up-reminder"] {
+    display: grid;
+    gap: 10px;
+    margin: -6px 0 20px;
+    border: 1px solid #fed7aa;
+    border-left: 4px solid #f28c52;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff7ed;
+    color: #7c2d12;
+    box-shadow: 0 8px 18px rgba(242, 140, 82, 0.1);
+  }
+
+  [data-testid="follow-up-reminder"] p {
+    margin: 0;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  [data-testid="follow-up-reminder"] div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   @media (max-width: 420px) {
     padding: 12px 8px 32px;
+
+    [data-testid="follow-up-reminder"] {
+      margin: -4px 0 16px;
+      padding: 10px;
+    }
+
+    [data-testid="follow-up-reminder"] div {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 `;
 
@@ -21,7 +56,8 @@ export const Header = styled.header`
 
   p {
     margin: 0;
-    color: #5f6b7a;
+    color: #4b5563;
+    font-weight: 700;
     line-height: 1.6;
   }
 
