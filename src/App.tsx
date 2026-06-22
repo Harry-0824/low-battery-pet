@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   CompanionDaysNote,
@@ -39,10 +39,13 @@ function App() {
   const [selectedContextTags, setSelectedContextTags] = useState<ContextTag[]>([]);
   const [shortText, setShortText] = useState("");
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
+  const [previewAnimationKey, setPreviewAnimationKey] = useState(0);
+  const [isSubmitFeedbackActive, setIsSubmitFeedbackActive] = useState(false);
   const [historyRecords, setHistoryRecords] = useState<CheckInHistoryRecord[]>(() =>
     loadCheckInHistory()
   );
   const [historyWasCleared, setHistoryWasCleared] = useState(false);
+  const submitFeedbackTimeoutRef = useRef<number | null>(null);
   const companionDayCount = getCompanionDayCount(historyRecords);
   const companionDaysMessage =
     companionDayCount > 0
@@ -52,6 +55,14 @@ function App() {
   const petMemoryMessage = getPetStateMemoryMessage(historyRecords);
   const emptyHistoryKind = historyWasCleared ? "cleared" : "first-use";
   const shouldShowFirstUseGuide = historyRecords.length === 0 && !historyWasCleared;
+
+  useEffect(() => {
+    return () => {
+      if (submitFeedbackTimeoutRef.current !== null) {
+        window.clearTimeout(submitFeedbackTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleContextToggle = (contextTag: ContextTag) => {
     setSelectedContextTags((currentTags) =>
@@ -65,6 +76,11 @@ function App() {
     if (!selectedMoodTag) {
       return;
     }
+
+    if (submitFeedbackTimeoutRef.current !== null) {
+      window.clearTimeout(submitFeedbackTimeoutRef.current);
+    }
+    setIsSubmitFeedbackActive(true);
 
     const input = {
       moodTag: selectedMoodTag,
@@ -92,10 +108,16 @@ function App() {
       petState,
       companionReply
     });
+    setPreviewAnimationKey((currentKey) => currentKey + 1);
 
     setSelectedMoodTag(null);
     setSelectedContextTags([]);
     setShortText("");
+
+    submitFeedbackTimeoutRef.current = window.setTimeout(() => {
+      setIsSubmitFeedbackActive(false);
+      submitFeedbackTimeoutRef.current = null;
+    }, 650);
   };
 
   const handleClearHistory = () => {
@@ -106,7 +128,7 @@ function App() {
 
   return (
     <PageShell>
-      <RetroDeviceFrame>
+      <RetroDeviceFrame isFeedbackActive={isSubmitFeedbackActive}>
         <Header>
           <h1>今天電量如何？</h1>
           <p>選一個最像現在的電量，讓小電量獸接住你。</p>
@@ -130,11 +152,12 @@ function App() {
         <CheckInForm
           selectedMoodTag={selectedMoodTag}
           selectedContextTags={selectedContextTags}
+          isSubmitting={isSubmitFeedbackActive}
           onMoodSelect={setSelectedMoodTag}
           onContextToggle={handleContextToggle}
           onSubmit={handleSubmit}
         />
-        <StatePreview previewState={previewState} />
+        <StatePreview key={previewAnimationKey} previewState={previewState} />
         <HistoryList
           records={historyRecords}
           emptyStateKind={emptyHistoryKind}

@@ -12,12 +12,19 @@ import {
   StatusLights
 } from "./RetroDeviceFrame.styles";
 
-function RetroDeviceFrame({ children }: PropsWithChildren) {
+interface RetroDeviceFrameProps {
+  isFeedbackActive?: boolean;
+}
+
+function RetroDeviceFrame({
+  children,
+  isFeedbackActive = false
+}: PropsWithChildren<RetroDeviceFrameProps>) {
   return (
-    <DeviceShell aria-label="小電量獸裝置">
+    <DeviceShell aria-label="小電量獸裝置" $isFeedbackActive={isFeedbackActive}>
       <DeviceHeader>
         <Brand>小電量獸</Brand>
-        <StatusLights aria-hidden="true">
+        <StatusLights aria-hidden="true" $isFeedbackActive={isFeedbackActive}>
           <StatusLight />
           <StatusLight />
         </StatusLights>

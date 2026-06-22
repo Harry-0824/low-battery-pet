@@ -21,6 +21,7 @@ const contextOptions: Array<{ value: ContextTag; label: string }> = [
 interface CheckInFormProps {
   selectedMoodTag: MoodTag | null;
   selectedContextTags: ContextTag[];
+  isSubmitting: boolean;
   onMoodSelect: (moodTag: MoodTag) => void;
   onContextToggle: (contextTag: ContextTag) => void;
   onSubmit: () => void;
@@ -29,12 +30,19 @@ interface CheckInFormProps {
 function CheckInForm({
   selectedMoodTag,
   selectedContextTags,
+  isSubmitting,
   onMoodSelect,
   onContextToggle,
   onSubmit
 }: CheckInFormProps) {
-  const canSubmit = selectedMoodTag !== null;
+  const hasMoodSelection = selectedMoodTag !== null;
+  const canSubmit = hasMoodSelection && !isSubmitting;
   const moodHelperId = "mood-helper";
+  const helperText = isSubmitting
+    ? "小電量獸正在收集今天的一點點。"
+    : !hasMoodSelection
+      ? "先選一個最像今天的電量"
+      : null;
 
   return (
     <Form
@@ -48,14 +56,18 @@ function CheckInForm({
     >
       <Section>
         <legend>今天的電量</legend>
-        {!canSubmit ? <HelperText id={moodHelperId}>先選一個最像今天的電量</HelperText> : null}
+        {helperText ? (
+          <HelperText id={moodHelperId} aria-live={isSubmitting ? "polite" : undefined}>
+            {helperText}
+          </HelperText>
+        ) : null}
         <ButtonGrid>
           {moodOptions.map((option) => (
             <TagButton
               key={option.value}
               label={option.label}
               isSelected={selectedMoodTag === option.value}
-              describedBy={!canSubmit ? moodHelperId : undefined}
+              describedBy={helperText ? moodHelperId : undefined}
               onClick={() => onMoodSelect(option.value)}
             />
           ))}
@@ -76,8 +88,13 @@ function CheckInForm({
         </ButtonGrid>
       </Section>
 
-      <SubmitButton type="submit" disabled={!canSubmit} aria-describedby={!canSubmit ? moodHelperId : undefined}>
-        讓小電量獸接住我
+      <SubmitButton
+        type="submit"
+        disabled={!canSubmit}
+        aria-busy={isSubmitting}
+        aria-describedby={helperText ? moodHelperId : undefined}
+      >
+        {isSubmitting ? "收集中..." : "讓小電量獸接住我"}
       </SubmitButton>
     </Form>
   );
