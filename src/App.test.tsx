@@ -54,8 +54,31 @@ const getDateHoursAgo = (hoursAgo: number) => {
   return date.toISOString();
 };
 
+const scrollIntoViewMock = vi.fn();
+
+const createMatchMediaMock = (matches: boolean) =>
+  vi.fn().mockImplementation((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
+  }));
+
 beforeEach(() => {
   localStorage.clear();
+  scrollIntoViewMock.mockReset();
+  Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
+    configurable: true,
+    value: scrollIntoViewMock
+  });
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: createMatchMediaMock(false)
+  });
 });
 
 afterEach(() => {
@@ -151,6 +174,37 @@ describe("App", () => {
     expect(screen.queryByText("Derived user state")).toBeNull();
     expect(screen.queryByText("Pet state")).toBeNull();
     expect(screen.queryByText("Tone")).toBeNull();
+  });
+
+  it("scrolls the submitted pet reply into view", () => {
+    render(<App />);
+
+    const buttons = screen.getAllByRole("button");
+    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[buttons.length - 1]);
+
+    expect(screen.getByTestId("check-in-result").getAttribute("aria-live")).toBe("polite");
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+
+  it("uses instant scrolling for the submitted reply when reduced motion is preferred", () => {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: createMatchMediaMock(true)
+    });
+    render(<App />);
+
+    const buttons = screen.getAllByRole("button");
+    fireEvent.click(buttons[0]);
+    fireEvent.click(buttons[buttons.length - 1]);
+
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({
+      behavior: "auto",
+      block: "start"
+    });
   });
 
   it("accepts optional text without showing note debug output", () => {

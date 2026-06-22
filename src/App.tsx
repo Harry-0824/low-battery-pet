@@ -55,6 +55,8 @@ function App() {
   const [followUpResponses, setFollowUpResponses] = useState(() => loadFollowUpResponses());
   const [historyWasCleared, setHistoryWasCleared] = useState(false);
   const submitFeedbackTimeoutRef = useRef<number | null>(null);
+  const previewResultRef = useRef<HTMLElement | null>(null);
+  const shouldScrollToPreviewRef = useRef(false);
   const companionDayCount = getCompanionDayCount(historyRecords);
   const companionDaysMessage =
     companionDayCount > 0
@@ -76,6 +78,23 @@ function App() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!previewState || !shouldScrollToPreviewRef.current || !previewResultRef.current) {
+      return;
+    }
+
+    shouldScrollToPreviewRef.current = false;
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    previewResultRef.current.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
+  }, [previewAnimationKey, previewState]);
 
   const handleContextToggle = (contextTag: ContextTag) => {
     setSelectedContextTags((currentTags) =>
@@ -121,6 +140,7 @@ function App() {
       petState,
       companionReply
     });
+    shouldScrollToPreviewRef.current = true;
     setPreviewAnimationKey((currentKey) => currentKey + 1);
 
     setSelectedMoodTag(null);
@@ -200,7 +220,11 @@ function App() {
           onContextToggle={handleContextToggle}
           onSubmit={handleSubmit}
         />
-        <StatePreview key={previewAnimationKey} previewState={previewState} />
+        <StatePreview
+          key={previewAnimationKey}
+          ref={previewResultRef}
+          previewState={previewState}
+        />
         <HistoryList
           records={historyRecords}
           emptyStateKind={emptyHistoryKind}
