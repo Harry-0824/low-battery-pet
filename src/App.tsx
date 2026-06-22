@@ -24,6 +24,7 @@ import {
 } from "./features/history/followUpReminder";
 import {
   clearCheckInHistory,
+  deleteCheckInHistoryDay,
   getCompanionDayCount,
   getPetStateMemoryMessage,
   getRecentBatteryTrail,
@@ -138,6 +139,12 @@ function App() {
     setHistoryWasCleared(true);
   };
 
+  const handleDeleteHistoryDay = (createdAt: string) => {
+    const records = deleteCheckInHistoryDay(createdAt);
+    setHistoryRecords(records);
+    setHistoryWasCleared(records.length === 0);
+  };
+
   const handleFollowUpSelect = (option: FollowUpOption) => {
     if (!pendingFollowUpRecord) {
       return;
@@ -198,6 +205,7 @@ function App() {
           records={historyRecords}
           emptyStateKind={emptyHistoryKind}
           onClear={handleClearHistory}
+          onDeleteDay={handleDeleteHistoryDay}
         />
       </RetroDeviceFrame>
     </PageShell>

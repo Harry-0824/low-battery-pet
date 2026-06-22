@@ -17,9 +17,10 @@ interface HistoryListProps {
   records: CheckInHistoryRecord[];
   emptyStateKind: EmptyHistoryStateKind;
   onClear: () => void;
+  onDeleteDay: (createdAt: string) => void;
 }
 
-function HistoryList({ records, emptyStateKind, onClear }: HistoryListProps) {
+function HistoryList({ records, emptyStateKind, onClear, onDeleteDay }: HistoryListProps) {
   const visibleRecords = records.slice(0, 3);
   const shouldShowLimitHint = records.length >= CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD;
   const historyTitleId = "history-title";
@@ -42,7 +43,7 @@ function HistoryList({ records, emptyStateKind, onClear }: HistoryListProps) {
       {records.length > 0 ? (
         <CardList>
           {visibleRecords.map((record) => (
-            <HistoryCard key={record.createdAt} record={record} />
+            <HistoryCard key={record.createdAt} record={record} onDeleteDay={onDeleteDay} />
           ))}
         </CardList>
       ) : (
