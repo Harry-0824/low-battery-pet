@@ -1,4 +1,17 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const idleBreathPulse = keyframes`
+  0%,
+  100% {
+    opacity: 0.96;
+    transform: var(--body-transform) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: var(--body-transform) scale(1.025);
+  }
+`;
 
 export const Display = styled.div`
   display: grid;
@@ -113,6 +126,16 @@ export const PixelBody = styled.div`
   box-shadow: inset 8px 0 0 var(--pet-highlight), 0 4px 0 rgba(36, 49, 66, 0.16);
   transform: var(--body-transform);
   transform-origin: 50% 100%;
+
+  [data-visual-state="okay"] & {
+    animation: ${idleBreathPulse} 8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-visual-state="okay"] & {
+      animation: none;
+    }
+  }
 
   &::before,
   &::after {
