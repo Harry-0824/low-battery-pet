@@ -40,6 +40,17 @@ export const ClearButton = styled.button`
   }
 `;
 
+export const HistoryLimitHint = styled.p`
+  margin: 0;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.5;
+`;
+
 export const CardList = styled.div`
   display: grid;
   gap: 12px;

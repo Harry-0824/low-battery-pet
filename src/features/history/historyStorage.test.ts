@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { CheckInHistoryRecord } from "./historyTypes";
 import {
   CHECK_IN_HISTORY_STORAGE_KEY,
+  CHECK_IN_HISTORY_RECORD_LIMIT,
   clearCheckInHistory,
   getCompanionDayCount,
   getPetStateMemoryMessage,
@@ -62,16 +63,18 @@ describe("historyStorage", () => {
     expect(loadCheckInHistory()).toEqual([newerRecord, olderRecord]);
   });
 
-  it("keeps only the latest 30 records", () => {
-    for (let index = 0; index < 35; index += 1) {
+  it("keeps only the latest history record limit", () => {
+    for (let index = 0; index < CHECK_IN_HISTORY_RECORD_LIMIT + 5; index += 1) {
       saveCheckInRecord(createRecord(`2026-06-08T10:${String(index).padStart(2, "0")}:00.000Z`));
     }
 
     const records = loadCheckInHistory();
 
-    expect(records).toHaveLength(30);
+    expect(records).toHaveLength(CHECK_IN_HISTORY_RECORD_LIMIT);
     expect(records[0].createdAt).toBe("2026-06-08T10:34:00.000Z");
-    expect(records[29].createdAt).toBe("2026-06-08T10:05:00.000Z");
+    expect(records[CHECK_IN_HISTORY_RECORD_LIMIT - 1].createdAt).toBe(
+      "2026-06-08T10:05:00.000Z"
+    );
   });
 
   it("clears all saved history records", () => {
