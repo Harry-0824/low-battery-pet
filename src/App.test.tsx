@@ -328,6 +328,15 @@ describe("App", () => {
     expect(screen.getByText("送出後，牠會留一句話和一個很小的行動。")).toBeTruthy();
   });
 
+  it("shows a lighter empty battery trail before the first check-in", () => {
+    render(<App />);
+
+    const trail = screen.getByTestId("battery-trail");
+    expect(screen.getByText("最近 7 天的小電量足跡")).toBeTruthy();
+    expect(screen.getByText("7 天後這裡會慢慢亮起來，今天先留一點點就好。")).toBeTruthy();
+    expect(within(trail).queryByTestId("battery-trail-day")).toBeNull();
+  });
+
   it("hides first-use guidance after a check-in", () => {
     render(<App />);
 

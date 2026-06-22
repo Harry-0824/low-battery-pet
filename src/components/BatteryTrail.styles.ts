@@ -48,6 +48,17 @@ export const TrailIntro = styled.p`
   line-height: 1.5;
 `;
 
+export const TrailEmptyNote = styled.p`
+  margin: 0;
+  border: 1px dashed #d7dde6;
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: rgba(248, 250, 252, 0.72);
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+`;
+
 export const TrailGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
