@@ -5,6 +5,7 @@ import {
   CHECK_IN_HISTORY_STORAGE_KEY,
   CHECK_IN_HISTORY_RECORD_LIMIT,
   clearCheckInHistory,
+  deleteCheckInHistoryDay,
   getCompanionDayCount,
   getPetStateMemoryMessage,
   getRecentBatteryTrail,
@@ -82,6 +83,33 @@ describe("historyStorage", () => {
 
     clearCheckInHistory();
 
+    expect(loadCheckInHistory()).toEqual([]);
+    expect(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY)).toBeNull();
+  });
+
+  it("deletes records from the same local day and keeps other days", () => {
+    const firstSameDayRecord = createRecord("2026-06-08T10:00:00");
+    const secondSameDayRecord = createRecord("2026-06-08T21:00:00", "low");
+    const otherDayRecord = createRecord("2026-06-09T10:00:00", "normal");
+
+    saveCheckInRecord(firstSameDayRecord);
+    saveCheckInRecord(secondSameDayRecord);
+    saveCheckInRecord(otherDayRecord);
+
+    const records = deleteCheckInHistoryDay(firstSameDayRecord.createdAt);
+
+    expect(records).toEqual([otherDayRecord]);
+    expect(loadCheckInHistory()).toEqual([otherDayRecord]);
+    expect(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY)).toBe(
+      JSON.stringify([otherDayRecord])
+    );
+  });
+
+  it("removes the storage key when deleting the last local day", () => {
+    saveCheckInRecord(createRecord("2026-06-08T10:00:00"));
+    saveCheckInRecord(createRecord("2026-06-08T21:00:00", "low"));
+
+    expect(deleteCheckInHistoryDay("2026-06-08T12:00:00")).toEqual([]);
     expect(loadCheckInHistory()).toEqual([]);
     expect(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY)).toBeNull();
   });

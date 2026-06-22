@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import {
   CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD,
+  loadCheckInHistory,
   saveCheckInRecord
 } from "./features/history/historyStorage";
 import type { CheckInHistoryRecord } from "./features/history/historyTypes";
@@ -59,6 +60,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
   vi.useRealTimers();
 });
 
@@ -351,6 +353,49 @@ describe("App", () => {
     expect(screen.queryByTestId("history-card")).toBeNull();
     expect(screen.getByText("紀錄已經放下了")).toBeTruthy();
     expect(screen.getByText("這裡先變安靜。下一次想回來時，可以重新留下今天的電量。")).toBeTruthy();
+  });
+
+  it("deletes one local history day and keeps other days in sync", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-22T12:00:00"));
+    const firstTodayRecord = createHistoryRecord("2026-06-22T08:00:00", "low");
+    const secondTodayRecord = createHistoryRecord("2026-06-22T10:00:00", "critical");
+    const yesterdayRecord = createHistoryRecord("2026-06-21T10:00:00", "normal");
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    saveCheckInRecord(firstTodayRecord);
+    saveCheckInRecord(secondTodayRecord);
+    saveCheckInRecord(yesterdayRecord);
+    render(<App />);
+
+    expect(screen.getByTestId("companion-days").textContent).toBe("小電量獸陪你 2 天了");
+    expect(within(screen.getByTestId("battery-trail")).getByText("快沒電")).toBeTruthy();
+
+    fireEvent.click(screen.getAllByRole("button", { name: /清除 .* 的紀錄/ })[0]);
+
+    expect(confirmSpy).toHaveBeenCalledWith("保留其他，只清這天？");
+    expect(screen.getAllByTestId("history-card")).toHaveLength(1);
+    expect(screen.getByTestId("history-card").textContent).toContain("6/21");
+    expect(screen.getByTestId("companion-days").textContent).toBe("小電量獸陪你 1 天了");
+    expect(within(screen.getByTestId("battery-trail")).queryByText("快沒電")).toBeNull();
+    expect(within(screen.getByTestId("battery-trail")).getByText("有一點亮")).toBeTruthy();
+    expect(loadCheckInHistory()).toEqual([yesterdayRecord]);
+  });
+
+  it("shows the cleared empty state after deleting the last local history day", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    saveCheckInRecord(createHistoryRecord("2026-06-22T08:00:00", "low"));
+    saveCheckInRecord(createHistoryRecord("2026-06-22T10:00:00", "critical"));
+    render(<App />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: /清除 .* 的紀錄/ })[0]);
+
+    expect(confirmSpy).toHaveBeenCalledWith("保留其他，只清這天？");
+    expect(screen.queryByTestId("history-card")).toBeNull();
+    expect(screen.getByText("紀錄已經放下了")).toBeTruthy();
+    expect(screen.getByText("這裡先變安靜。下一次想回來時，可以重新留下今天的電量。")).toBeTruthy();
+    expect(loadCheckInHistory()).toEqual([]);
   });
 
   it("adds a submitted check-in to the visible history list", () => {

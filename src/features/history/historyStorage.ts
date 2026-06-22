@@ -43,6 +43,21 @@ export const clearCheckInHistory = () => {
   localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
 };
 
+export const deleteCheckInHistoryDay = (createdAt: string): CheckInHistoryRecord[] => {
+  const targetDateKey = getLocalDateKey(createdAt);
+  const records = loadCheckInHistory().filter(
+    (record) => getLocalDateKey(record.createdAt) !== targetDateKey
+  );
+
+  if (records.length === 0) {
+    localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
+  } else {
+    localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify(records));
+  }
+
+  return records;
+};
+
 export const getCompanionDayCount = (records: CheckInHistoryRecord[]) =>
   new Set(records.map((record) => getLocalDateKey(record.createdAt))).size;
 
