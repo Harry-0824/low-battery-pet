@@ -58,12 +58,12 @@ export const CompanionDaysNote = styled.p`
 
 export const FirstUseGuide = styled.section`
   display: grid;
-  gap: 10px;
-  margin: -8px 0 22px;
-  border: 1px solid #d8b58a;
+  gap: 8px;
+  margin: -8px 0 18px;
+  border: 1px solid rgba(216, 181, 138, 0.72);
   border-radius: 8px;
-  padding: 12px;
-  background: #fffdf8;
+  padding: 10px 12px;
+  background: rgba(255, 253, 248, 0.76);
   color: #5f3216;
 
   h2 {
@@ -84,7 +84,7 @@ export const FirstUseGuide = styled.section`
 
   @media (max-width: 420px) {
     margin: -4px 0 16px;
-    padding: 10px;
+    padding: 9px 10px;
   }
 `;
 

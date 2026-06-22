@@ -3,6 +3,7 @@ import {
   DayLabel,
   DayPip,
   DayStatus,
+  TrailEmptyNote,
   TrailGrid,
   TrailIntro,
   TrailSection
@@ -32,27 +33,35 @@ interface BatteryTrailProps {
 }
 
 function BatteryTrail({ days }: BatteryTrailProps) {
+  const isEmptyTrail = days.every((day) => day.energyLevel === "empty");
+
   return (
     <TrailSection aria-label="最近 7 天的小電量足跡" data-testid="battery-trail">
       <h2>最近 7 天的小電量足跡</h2>
-      <TrailIntro>有紀錄的日子會亮一下，空白也可以慢慢來。</TrailIntro>
-      <TrailGrid>
-        {days.map((day) => {
-          const copy = batteryTrailCopy[day.energyLevel];
+      {isEmptyTrail ? (
+        <TrailEmptyNote>7 天後這裡會慢慢亮起來，今天先留一點點就好。</TrailEmptyNote>
+      ) : (
+        <>
+          <TrailIntro>有紀錄的日子會亮一下，空白也可以慢慢來。</TrailIntro>
+          <TrailGrid>
+            {days.map((day) => {
+              const copy = batteryTrailCopy[day.energyLevel];
 
-          return (
-            <DayPip
-              key={day.dateKey}
-              $energyLevel={day.energyLevel}
-              data-testid="battery-trail-day"
-              title={copy.title}
-            >
-              <DayLabel>{day.label}</DayLabel>
-              <DayStatus>{copy.label}</DayStatus>
-            </DayPip>
-          );
-        })}
-      </TrailGrid>
+              return (
+                <DayPip
+                  key={day.dateKey}
+                  $energyLevel={day.energyLevel}
+                  data-testid="battery-trail-day"
+                  title={copy.title}
+                >
+                  <DayLabel>{day.label}</DayLabel>
+                  <DayStatus>{copy.label}</DayStatus>
+                </DayPip>
+              );
+            })}
+          </TrailGrid>
+        </>
+      )}
     </TrailSection>
   );
 }
