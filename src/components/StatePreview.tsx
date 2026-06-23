@@ -24,7 +24,7 @@ interface StatePreviewProps {
  *
  * 使用 forwardRef 讓父元件可以透過 ref 控制捲動行為。
  */
-const StatePreview = forwardRef<HTMLElement, StatePreviewProps>(function StatePreview(
+const StatePreview = forwardRef<HTMLDivElement, StatePreviewProps>(function StatePreview(
   { previewState },
   ref
 ) {

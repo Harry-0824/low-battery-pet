@@ -87,7 +87,7 @@ function App() {
   /** 送出後 feedback timer 的 ref，用來在 cleanup 時清除 */
   const submitFeedbackTimeoutRef = useRef<number | null>(null);
   /** 預覽區 DOM 元素的 ref，用於自動捲動 */
-  const previewResultRef = useRef<HTMLElement | null>(null);
+  const previewResultRef = useRef<HTMLDivElement | null>(null);
   /** 標記是否需要將預覽區捲動到可視範圍 */
   const shouldScrollToPreviewRef = useRef(false);
 
