@@ -1,36 +1,36 @@
 import styled from "styled-components";
 
+/**
+ * EmptyHistoryState.styles.ts
+ *
+ * 空白歷史狀態的樣式：
+ * - EmptyState: 居中顯示的容器
+ * - EmptyIcon: 圖示文字
+ * - EmptyTitle: 標題
+ * - EmptyBody: 說明文字
+ */
+
 export const EmptyState = styled.div`
   display: grid;
   gap: 8px;
-  border: 1px dashed #d8b58a;
-  border-radius: 8px;
-  padding: 18px;
-  background: #fff8ed;
-  color: #7c4a24;
-
-  p {
-    margin: 0;
-  }
+  text-align: center;
+  padding: 18px 12px;
 `;
 
 export const EmptyIcon = styled.span`
-  width: 32px;
-  height: 32px;
-  border: 1px solid #d8b58a;
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  background: #fffdf8;
-  color: #8a4b21;
-  font-weight: 900;
+  font-size: 1.6rem;
+  line-height: 1;
 `;
 
 export const EmptyTitle = styled.p`
-  color: #5f3216;
-  font-weight: 900;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #243142;
 `;
 
 export const EmptyBody = styled.p`
-  line-height: 1.55;
+  margin: 0;
+  color: #5f6b7a;
+  line-height: 1.5;
 `;

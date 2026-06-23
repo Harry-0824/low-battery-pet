@@ -1,5 +1,15 @@
 import styled from "styled-components";
 
+/**
+ * App.styles.ts
+ *
+ * 定義小電量獸主畫面的全域佈局樣式：
+ * - PageShell: 最外層容器，限制最大寬度並置中
+ * - Header: 標題區域
+ * - CompanionDaysNote / PetMemoryNote: 陪伴天數和寵物記憶的提示框
+ * - FirstUseGuide: 第一次使用時的引導說明
+ */
+
 export const PageShell = styled.main`
   width: min(100%, 560px);
   margin: 0 auto;

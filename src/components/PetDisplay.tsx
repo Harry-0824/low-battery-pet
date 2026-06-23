@@ -24,6 +24,17 @@ interface PetDisplayCopy {
 
 type PetVisualState = "okay" | "drained" | "overloaded" | "lonely" | "low";
 
+/**
+ * PetDisplay 元件
+ *
+ * 負責渲染小電量獸的視覺呈現：
+ * - PixelPetVisual：用 CSS 繪製的像素風格寵物頭像
+ * - PetFace：寵物的表情文字（如 (x_x)）
+ * - StatusText：寵物狀態的描述（如「小電量獸快沒電了」）
+ *
+ * getPetVisualState 和 getPetDisplay 會根據 PetState 的屬性
+ * 決定外顯樣子和文字。
+ */
 function PetDisplay({ petState }: PetDisplayProps) {
   const display = getPetDisplay(petState);
   const visualState = getPetVisualState(petState);
@@ -52,6 +63,12 @@ function PetDisplay({ petState }: PetDisplayProps) {
   );
 }
 
+/**
+ * 將 PetState 對應到測試用的視覺狀態類別
+ *
+ * 這些類別會映射到 CSS class 或 data attribute，
+ * 讓測試可以驗證寵物呈現的外觀是否符合預期。
+ */
 export const getPetVisualState = (petState: PetState): PetVisualState => {
   if (petState.mood === "low_power" || petState.effect === "low_battery") {
     return "drained";
@@ -76,6 +93,12 @@ export const getPetVisualState = (petState: PetState): PetVisualState => {
   return "okay";
 };
 
+/**
+ * 根據 PetState 決定表情文字和狀態描述
+ *
+ * 優先檢查 accessory（如飯糰），再檢查 mood 和 effect，
+ * 最後是預設的待機狀態。
+ */
 export const getPetDisplay = (petState: PetState): PetDisplayCopy => {
   if (petState.accessory === "rice_ball") {
     return {

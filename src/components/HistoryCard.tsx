@@ -7,6 +7,18 @@ import {
 } from "../features/history/historyView";
 import { Card, CardHeader, CreatedAt, DayActionButton, HistoryLine } from "./HistoryCard.styles";
 
+/**
+ * HistoryCard 元件
+ *
+ * 渲染單一歷史紀錄卡片，包含：
+ * - 建立時間和刪除按鈕（...）
+ * - 心情與情境標籤
+ * - 寵物狀態摘要
+ * - 陪伴回覆摘要
+ *
+ * 使用者可以點擊刪除按鈕，確認後只刪除「這一天」的所有紀錄，
+ * 保留其他日期的紀錄。
+ */
 interface HistoryCardProps {
   record: CheckInHistoryRecord;
   onDeleteDay: (createdAt: string) => void;

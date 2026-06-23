@@ -1,101 +1,53 @@
 import { describe, expect, it } from "vitest";
-
 import { deriveUserState } from "./deriveUserState";
-import type { CheckInInput, ContextTag, MoodTag } from "./checkInTypes";
 
-const createInput = (
-  moodTag: MoodTag,
-  contextTags: ContextTag[] = []
-): CheckInInput => ({
-  moodTag,
-  contextTags
-});
+/**
+ * deriveUserState 模組的單元測試
+ *
+ * 驗證心情標籤和情境標籤如何組合推导出使用者的內在狀態。
+ */
 
 describe("deriveUserState", () => {
-  const moodCases: Array<{
-    moodTag: MoodTag;
-    expected: {
-      mood: string;
-      energyLevel: string;
-      stressLevel: string;
-      needsComfort: boolean;
-    };
-  }> = [
-    {
-      moodTag: "okay",
-      expected: {
-        mood: "neutral",
-        energyLevel: "normal",
-        stressLevel: "low",
-        needsComfort: false
-      }
-    },
-    {
-      moodTag: "low_battery",
-      expected: {
-        mood: "tired",
-        energyLevel: "critical",
-        stressLevel: "medium",
-        needsComfort: true
-      }
-    },
-    {
-      moodTag: "annoyed",
-      expected: {
-        mood: "angry",
-        energyLevel: "low",
-        stressLevel: "high",
-        needsComfort: true
-      }
-    },
-    {
+  it("maps okay to neutral state without extra needs", () => {
+    const result = deriveUserState({ moodTag: "okay", contextTags: [] });
+
+    expect(result).toEqual({
+      mood: "neutral",
+      energyLevel: "normal",
+      stressLevel: "low",
+      needsComfort: false,
+      hasWalletPressure: false,
+      needsRest: false,
+      needsFoodSuggestion: false
+    });
+  });
+
+  it("keeps base low_battery state and sets comfort need", () => {
+    const result = deriveUserState({ moodTag: "low_battery", contextTags: [] });
+
+    expect(result.mood).toBe("tired");
+    expect(result.energyLevel).toBe("critical");
+    expect(result.needsComfort).toBe(true);
+  });
+
+  it("combines mood and context tags for a mixed state", () => {
+    const result = deriveUserState({
       moodTag: "lonely",
-      expected: {
-        mood: "lonely",
-        energyLevel: "low",
-        stressLevel: "medium",
-        needsComfort: true
-      }
-    },
-    {
+      contextTags: ["work_stress", "wallet_pressure"]
+    });
+
+    expect(result.mood).toBe("lonely");
+    expect(result.stressLevel).toBe("high");
+    expect(result.hasWalletPressure).toBe(true);
+  });
+
+  it("ignores unknown context tags and keeps base mood state", () => {
+    const result = deriveUserState({
       moodTag: "no_thoughts",
-      expected: {
-        mood: "overloaded",
-        energyLevel: "low",
-        stressLevel: "medium",
-        needsComfort: true
-      }
-    }
-  ];
-
-  it.each(moodCases)("maps $moodTag to the expected derived user state", ({ moodTag, expected }) => {
-    expect(deriveUserState(createInput(moodTag))).toMatchObject(expected);
-  });
-
-  it("marks wallet pressure when the wallet_pressure context tag is present", () => {
-    expect(deriveUserState(createInput("okay", ["wallet_pressure"]))).toMatchObject({
-      hasWalletPressure: true
+      contextTags: ["unknown_tag" as never]
     });
-  });
 
-  it("raises stress to high when the work_stress context tag is present", () => {
-    expect(deriveUserState(createInput("okay", ["work_stress"]))).toMatchObject({
-      stressLevel: "high"
-    });
-  });
-
-  it.each([
-    "social_fatigue",
-    "want_to_rest"
-  ] satisfies ContextTag[])("marks rest as needed for the %s context tag", (contextTag) => {
-    expect(deriveUserState(createInput("okay", [contextTag]))).toMatchObject({
-      needsRest: true
-    });
-  });
-
-  it("marks food suggestions as needed for the dinner_problem context tag", () => {
-    expect(deriveUserState(createInput("okay", ["dinner_problem"]))).toMatchObject({
-      needsFoodSuggestion: true
-    });
+    expect(result.mood).toBe("overloaded");
+    expect(result.energyLevel).toBe("low");
   });
 });

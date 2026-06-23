@@ -2,6 +2,16 @@ import type { ContextTag, MoodTag } from "../features/checkIn/checkInTypes";
 import { ButtonGrid, Form, HelperText, Section, SubmitButton } from "./CheckInForm.styles";
 import TagButton from "./TagButton";
 
+/**
+ * CheckInForm 元件
+ *
+ * 這是使用者的主要輸入區：
+ * - 心情選擇（單選）
+ * - 情境標籤（複選）
+ * - 送出按鈕
+ *
+ * 表單送出前會先檢查是否有選擇心情（心情為必填）。
+ */
 const moodOptions: Array<{ value: MoodTag; label: string }> = [
   { value: "okay", label: "還行" },
   { value: "low_battery", label: "快沒電" },

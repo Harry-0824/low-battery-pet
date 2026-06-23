@@ -1,5 +1,18 @@
 import { DrawerNote, Field, Label, TextArea, TextCounter, TextHeader } from "./TreeTextInput.styles";
 
+/**
+ * TreeTextInput 元件
+ *
+ * 一個多行文字輸入框，類比「樹洞」的概念：
+ * - 上限 120 字
+ * - 有即時字數計數器
+ * - 有 helper text 提示使用者可以留空
+ * - 有無障礙 label 和說明關聯
+ *
+ * Props:
+ * - value: 當前輸入內容
+ * - onChange: 內容變更時的回呼
+ */
 interface TreeTextInputProps {
   value: string;
   onChange: (value: string) => void;

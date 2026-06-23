@@ -1,5 +1,14 @@
 import styled from "styled-components";
 
+/**
+ * TagButton.styles.ts
+ *
+ * 心情和情境標籤按鈕的樣式：
+ * - 選中時有深色漸層和焦點環
+ * - 未選中時是白色背景
+ * - 手機版按鈕寬度 100%
+ */
+
 export const Button = styled.button<{ $isSelected: boolean }>`
   display: inline-flex;
   align-items: center;

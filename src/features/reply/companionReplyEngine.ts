@@ -4,6 +4,17 @@ import { calculatePetState } from "../pet/petStateEngine";
 import type { PetMoodState } from "../pet/petTypes";
 import type { CompanionReply, CompanionReplyInput, ReplyTone } from "./replyTypes";
 
+/**
+ * 陪伴回覆生成引擎
+ *
+ * 根據使用者的心情和情境，從模板庫中挑選最適合的回覆內容。
+ * 設計重點：
+ * - 大部分回覆是預寫的模板，透過 seed-based selection 確保相同輸入有穩定輸出
+ * - 部分情境有專屬的 context-aware 回覆（例如：下班腦袋空空 + 工作壓力）
+ * - 不依賴外部 AI API，純前端計算，符合 local-first 精神
+ */
+
+/** 心情對應的回覆模板庫 */
 const moodTemplates: Record<
   MoodTag,
   {
@@ -53,6 +64,7 @@ const moodTemplates: Record<
   }
 };
 
+/** 寵物狀態對應的 petLine 模板庫 */
 const petLineTemplates: Record<PetMoodState, string[]> = {
   idle: [
     "我會待在旁邊，慢慢眨眼。",
@@ -86,6 +98,12 @@ const petLineTemplates: Record<PetMoodState, string[]> = {
   ]
 };
 
+/**
+ * 生成完整的陪伴回覆
+ *
+ * @param input - 使用者的 check-in 輸入
+ * @returns CompanionReply 物件，包含回覆文字、寵物台詞、小事建議和語氣
+ */
 export const generateCompanionReply = (input: CompanionReplyInput): CompanionReply => {
   const derivedUserState = deriveUserState(input);
   const petState = calculatePetState(derivedUserState);
@@ -106,6 +124,13 @@ export const generateCompanionReply = (input: CompanionReplyInput): CompanionRep
   };
 };
 
+/**
+ * 針對特定情境組合的回覆
+ *
+ * 這些是手寫的專屬回覆，比隨機模板更有針對性。
+ * 若沒有符合的情境組合，回傳 undefined，
+ * 呼叫端會改用心情的隨機模板。
+ */
 const composeContextAwareReply = (
   input: CompanionReplyInput
 ): string | undefined => {
@@ -136,6 +161,12 @@ const hasContext = (
   contextTag: ContextTag
 ): boolean => input.contextTags.includes(contextTag);
 
+/**
+ * 基於 seed 的穩定隨機選擇
+ *
+ * 將輸入的所有特徵組成一個字串，計算字元編碼總和後取餘數，
+ * 確保相同輸入每次都挑到同一句模板，不會忽東忽西。
+ */
 const selectVariant = (variants: string[], seedParts: string[]): string => {
   const seed = seedParts.join("|");
   const score = Array.from(seed).reduce(
@@ -146,6 +177,17 @@ const selectVariant = (variants: string[], seedParts: string[]): string => {
   return variants[score % variants.length];
 };
 
+/**
+ * 根據使用者的推導狀態，挑選一個具體的「一件小事」
+ *
+ * 優先順序反映了系統認為使用者當前最需要被提醒的優先需求：
+ * 1. 錢包壓力
+ * 2. 需要食物建議
+ * 3. 需要休息
+ * 4. 電量嚴重不足（critical）
+ * 5. 壓力過高
+ * 6. 其他 → 通用小事
+ */
 const selectTinyAction = (
   derivedUserState: ReturnType<typeof deriveUserState>
 ): string => {

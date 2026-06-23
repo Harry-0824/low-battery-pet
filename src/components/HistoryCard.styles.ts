@@ -1,5 +1,16 @@
 import styled from "styled-components";
 
+/**
+ * HistoryCard.styles.ts
+ *
+ * 單一歷史紀錄卡片的樣式：
+ * - Card: 卡片外框，有 hover/focus-within 效果
+ * - CardHeader: 頂部時間和刪除按鈕的排列
+ * - CreatedAt: 建立時間的文字樣式
+ * - DayActionButton: 刪除單日紀錄的小按鈕
+ * - HistoryLine: 卡片內每行文字的樣式
+ */
+
 export const Card = styled.article`
   display: grid;
   gap: 8px;

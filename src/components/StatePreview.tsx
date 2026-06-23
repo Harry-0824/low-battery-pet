@@ -15,6 +15,15 @@ interface StatePreviewProps {
   previewState: PreviewState | null;
 }
 
+/**
+ * StatePreview 元件
+ *
+ * 這是使用者送出表單後出現的結果面板，包含：
+ * - PetDisplay：寵物的視覺狀態
+ * - CompanionReplyPreview：陪伴回覆內容
+ *
+ * 使用 forwardRef 讓父元件可以透過 ref 控制捲動行為。
+ */
 const StatePreview = forwardRef<HTMLElement, StatePreviewProps>(function StatePreview(
   { previewState },
   ref

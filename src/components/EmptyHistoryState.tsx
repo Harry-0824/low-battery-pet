@@ -1,5 +1,13 @@
 import { EmptyBody, EmptyIcon, EmptyState, EmptyTitle } from "./EmptyHistoryState.styles";
 
+/**
+ * EmptyHistoryState 元件
+ *
+ * 當使用者沒有歷史紀錄時顯示的空白狀態畫面。
+ * 分為兩種：
+ * - first-use：第一次使用，還沒有任何紀錄
+ * - cleared：使用者手動清除過所有紀錄
+ */
 export type EmptyHistoryStateKind = "first-use" | "cleared";
 
 const emptyStateCopy = {

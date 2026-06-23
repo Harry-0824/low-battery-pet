@@ -1,10 +1,22 @@
 import type { CheckInHistoryRecord } from "./historyTypes";
 
+/**
+ * 歷史儲存模組
+ *
+ * 負責所有 check-in 紀錄的讀寫、刪除、查詢。
+ * 所有資料都貯存在瀏覽器的 localStorage 中，local-first 設計。
+ */
+
+/** localStorage 中儲存 check-in 紀錄的 key */
 export const CHECK_IN_HISTORY_STORAGE_KEY = "low-battery-pet:check-ins";
+/** 最多保留的歷史紀錄筆數，超過時會自動淘汰最舊的 */
 export const CHECK_IN_HISTORY_RECORD_LIMIT = 30;
+/** 當剩餘名額少於此值時，會顯示清理提示 */
 export const CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD = CHECK_IN_HISTORY_RECORD_LIMIT - 3;
 
+/** 電池足跡圖要顯示最近幾天 */
 const RECENT_BATTERY_TRAIL_DAYS = 7;
+/** 寵物記憶功能只看最近幾筆紀錄來判斷使用者近況 */
 const PET_MEMORY_RECORD_LIMIT = 4;
 
 export type BatteryTrailEnergyLevel =
@@ -17,6 +29,12 @@ export interface BatteryTrailDay {
   energyLevel: BatteryTrailEnergyLevel;
 }
 
+/**
+ * 從 localStorage 載入所有歷史紀錄
+ *
+ * 會自動依 createdAt 由新到舊排序，
+ * 並限制最多回傳 CHECK_IN_HISTORY_RECORD_LIMIT 筆。
+ */
 export const loadCheckInHistory = (): CheckInHistoryRecord[] => {
   const storedValue = localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY);
 
@@ -29,6 +47,12 @@ export const loadCheckInHistory = (): CheckInHistoryRecord[] => {
   return sortNewestFirst(records).slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
 };
 
+/**
+ * 儲存一筆新的 check-in 紀錄
+ *
+ * 新紀錄會插入陣列最前面，重新排序後只保留最新的 N 筆，
+ * 避免 localStorage 無限膨脹。
+ */
 export const saveCheckInRecord = (record: CheckInHistoryRecord): CheckInHistoryRecord[] => {
   const records = [record, ...loadCheckInHistory()]
     .sort(compareNewestFirst)
@@ -39,10 +63,17 @@ export const saveCheckInRecord = (record: CheckInHistoryRecord): CheckInHistoryR
   return records;
 };
 
+/** 清除所有歷史紀錄（localStorage + React state） */
 export const clearCheckInHistory = () => {
   localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
 };
 
+/**
+ * 刪除指定日期的所有歷史紀錄
+ *
+ * 按「本地日期」比對，刪除該日所有紀錄。
+ * 若刪除後沒有剩餘紀錄，會連同 localStorage key 一起刪除。
+ */
 export const deleteCheckInHistoryDay = (createdAt: string): CheckInHistoryRecord[] => {
   const targetDateKey = getLocalDateKey(createdAt);
   const records = loadCheckInHistory().filter(
@@ -58,6 +89,10 @@ export const deleteCheckInHistoryDay = (createdAt: string): CheckInHistoryRecord
   return records;
 };
 
+/**
+ * 計算使用者來過的天數
+ * 依據創建日期的本地日期去重後計算
+ */
 export const getCompanionDayCount = (records: CheckInHistoryRecord[]) =>
   new Set(records.map((record) => getLocalDateKey(record.createdAt))).size;
 

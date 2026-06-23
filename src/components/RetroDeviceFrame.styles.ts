@@ -1,5 +1,16 @@
 import styled, { css, keyframes } from "styled-components";
 
+/**
+ * RetroDeviceFrame.styles.ts
+ *
+ * 定義復古遊戲機風格的裝置外框樣式：
+ * - shellRipple / lightPulse: 送出表單後的回饋動畫
+ * - DeviceShell: 機身外殼，黃色質感
+ * - DeviceHeader / Brand / StatusLights: 頂部品牌和狀態燈
+ * - DeviceScreen: 主要的內容顯示區域（可捲動）
+ * - DeviceControls / DPad / RoundButton: 裝飾用的遊戲按鍵
+ */
+
 const shellRipple = keyframes`
   0% {
     opacity: 0.5;

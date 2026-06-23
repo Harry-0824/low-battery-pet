@@ -1,6 +1,20 @@
 import type { DerivedUserState } from "../checkIn/checkInTypes";
 import type { PetState } from "./petTypes";
 
+/**
+ * 寵物狀態引擎
+ *
+ * 這是整個應用「陪伴感」的核心邏輯：
+ * 根據使用者的內在狀態（DerivedUserState），
+ *  deterministic 地輸出寵物應該呈現的樣子（PetState）。
+ *
+ * 設計原則：
+ * - Priority order：多個條件同時成立時，依順序優先級決定結果，
+ *   確保相同輸入永遠得到相同輸出（可預測、易於測試）。
+ * - 免運算子：不依賴 Math.random，讓測試和記錄呈現穩定一致。
+ */
+
+/** 預設的待機狀態，當沒有任何特殊條件成立時使用 */
 const idleState: PetState = {
   mood: "idle",
   animation: "idle",
@@ -8,6 +22,17 @@ const idleState: PetState = {
   accessory: "none"
 };
 
+/**
+ * 計算寵物應該呈現的狀態外顯
+ *
+ * 優先順序（高到低）：
+ * 1. energyLevel === "critical" → 快沒電（小雞球睡覺）
+ * 2. stressLevel === "high" → 壓力爆表（頭上冒黑雲、抖動）
+ * 3. mood === "lonely" → 孤單（躲起來、下雨）
+ * 4. hasWalletPressure → 錢包有壓力（炸毛、硬幣特效）
+ * 5. needsFoodSuggestion → 需要晚餐建議（抱著飯糰）
+ * 6. 其他 → 普通待機
+ */
 export const calculatePetState = (derivedState: DerivedUserState): PetState => {
   // Priority order keeps the result deterministic when multiple conditions apply.
   if (derivedState.energyLevel === "critical") {

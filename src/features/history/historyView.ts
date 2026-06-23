@@ -1,5 +1,12 @@
 import type { CheckInHistoryRecord } from "./historyTypes";
 
+/**
+ * 歷史檢視格式化模組
+ *
+ * 負責將內部歷史紀錄格式化成使用者能閱讀的介面文字，
+ * 包括時間、情境標籤、寵物狀態摘要和回覆摘要。
+ */
+
 const moodSummary = {
   okay: "還行",
   low_battery: "快沒電",
@@ -25,6 +32,12 @@ const petSummary = {
   hungry: "小電量獸抱著飯糰"
 } satisfies Record<CheckInHistoryRecord["petState"]["mood"], string>;
 
+/**
+ * 格式化歷史紀錄的建立時間
+ * - 如果是今天：顯示「今天 HH:MM」
+ * - 否則顯示「M/D HH:MM」
+ * - 若日期無效：顯示「時間不明」
+ */
 export const formatHistoryCreatedAt = (createdAt: string) => {
   const date = new Date(createdAt);
 
@@ -46,6 +59,10 @@ export const formatHistoryCreatedAt = (createdAt: string) => {
   return `${date.getMonth() + 1}/${date.getDate()} ${time}`;
 };
 
+/**
+ * 格式化歷史卡片的情境標籤列
+ * 將心情標籤與所有情境標籤用・連接成一行
+ */
 export const formatHistoryContextTags = (record: CheckInHistoryRecord) => {
   const summaries = [
     moodSummary[record.moodTag],
@@ -55,9 +72,15 @@ export const formatHistoryContextTags = (record: CheckInHistoryRecord) => {
   return summaries.join("・");
 };
 
+/** 格式化寵物在歷史紀錄中的狀態標語 */
 export const formatHistoryPetSummary = (record: CheckInHistoryRecord) =>
   petSummary[record.petState.mood];
 
+/**
+ * 格式化陪伴回覆的摘要
+ * 只取回覆的第一句話（以句點分隔），
+ * 避免完整回覆太長影響歷史卡片版面
+ */
 export const formatHistoryReplySummary = (record: CheckInHistoryRecord) => {
   const [firstSentence] = record.companionReply.reply.split(".");
 

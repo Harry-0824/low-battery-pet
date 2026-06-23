@@ -1,5 +1,16 @@
 import styled from "styled-components";
 
+/**
+ * CheckInForm.styles.ts
+ *
+ * CheckInForm 表單的樣式：
+ * - Form: 表單外框
+ * - Section: 每個表單區域（心情/情境）的容器
+ * - ButtonGrid: 按鈕網格，手機版改為兩欄
+ * - HelperText: 輔助提示文字（未選擇心情或送出中）
+ * - SubmitButton: 送出按鈕，有忙等狀態樣式
+ */
+
 export const Form = styled.form`
   display: grid;
   gap: 16px;

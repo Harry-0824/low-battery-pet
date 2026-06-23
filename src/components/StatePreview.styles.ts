@@ -1,24 +1,18 @@
 import styled from "styled-components";
 
-export const PreviewPanel = styled.section`
+/**
+ * StatePreview.styles.ts
+ *
+ * StatePreview 結果面板的樣式：
+ * - PreviewPanel: 預覽區外框，有輕微的背景和圓角
+ */
+
+export const PreviewPanel = styled.div`
   display: grid;
-  gap: 14px;
-  margin-top: 24px;
-  animation: preview-rise-in 420ms ease-out;
-
-  @keyframes preview-rise-in {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
+  gap: 16px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #d7dde6;
+  border-radius: 12px;
+  background: #ffffff;
 `;

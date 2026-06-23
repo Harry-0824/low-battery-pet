@@ -8,6 +8,18 @@ import {
 } from "./features/history/historyStorage";
 import type { CheckInHistoryRecord } from "./features/history/historyTypes";
 
+/**
+ * App 元件的整合測試
+ *
+ * 覆蓋：
+ * - 初次載入畫面
+ * - 心情和情境標籤的選取行為
+ * - 送出表單後的預覽結果和歷史紀錄
+ * - 自動捲動到預覽區
+ * - 歷史列表的顯示、刪除和清除
+ * - 後續追問提醒的顯示時機
+ */
+
 const createHistoryRecord = (
   createdAt: string,
   energyLevel: CheckInHistoryRecord["derivedUserState"]["energyLevel"] = "low"

@@ -13,6 +13,15 @@ import {
 import EmptyHistoryState, { type EmptyHistoryStateKind } from "./EmptyHistoryState";
 import HistoryCard from "./HistoryCard";
 
+/**
+ * HistoryList 元件
+ *
+ * 這是歷史紀錄的主要容器，管理顯示邏輯：
+ * - 最多只顯示最近 3 筆（避免畫面太長）
+ * - 當紀錄數量接近上限（27 筆）時，顯示清理提示
+ * - 沒有紀錄時顯示 EmptyHistoryState
+ * - 有紀錄時顯示「放下這些紀錄」的清除按鈕
+ */
 interface HistoryListProps {
   records: CheckInHistoryRecord[];
   emptyStateKind: EmptyHistoryStateKind;
@@ -21,7 +30,9 @@ interface HistoryListProps {
 }
 
 function HistoryList({ records, emptyStateKind, onClear, onDeleteDay }: HistoryListProps) {
+  /** 只顯示最近 3 筆，保持畫面節省空間 */
   const visibleRecords = records.slice(0, 3);
+  /** 當紀錄數量 >= 27 時，顯示「只保留最近 30 筆」的提示 */
   const shouldShowLimitHint = records.length >= CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD;
   const historyTitleId = "history-title";
 

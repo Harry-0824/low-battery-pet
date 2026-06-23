@@ -1,5 +1,15 @@
 import styled from "styled-components";
 
+/**
+ * BatteryTrail.styles.ts
+ *
+ * 7 天電池足跡圖的樣式：
+ * - TrailSection / TrailIntro / TrailEmptyNote: 區塊容器和說明文字
+ * - TrailGrid: 7 天格子的網格，手機版改為 4 欄
+ * - DayPip: 每天的小方塊，根據能量等級顯示不同顏色
+ * - DayLabel / DayStatus: 日期和狀態文字
+ */
+
 import type { BatteryTrailEnergyLevel } from "../features/history/historyStorage";
 
 const trailColor = {

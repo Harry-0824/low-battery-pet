@@ -9,6 +9,11 @@ import {
   TrailSection
 } from "./BatteryTrail.styles";
 
+/**
+ * 電池足跡的文字與圖示對照表
+ *
+ * 依能量等級顯示不同顏色和標語的空氣品質圖樣式元件。
+ */
 const batteryTrailCopy = {
   critical: {
     label: "快沒電",
@@ -32,6 +37,14 @@ interface BatteryTrailProps {
   days: BatteryTrailDay[];
 }
 
+/**
+ * BatteryTrail 元件
+ *
+ * 顯示最近 7 天的小電量足跡，用 7 個小方格表示每一天：
+ * - 有紀錄的日子會亮起並顯示能量等級
+ * - 沒有紀錄的日子顯示灰暗的「慢慢來」
+ * - 若 7 天全都是空的，則顯示鼓勵訊息而非格子
+ */
 function BatteryTrail({ days }: BatteryTrailProps) {
   const isEmptyTrail = days.every((day) => day.energyLevel === "empty");
 

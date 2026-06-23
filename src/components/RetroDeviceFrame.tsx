@@ -12,6 +12,18 @@ import {
   StatusLights
 } from "./RetroDeviceFrame.styles";
 
+/**
+ * RetroDeviceFrame 元件
+ *
+ * 這是整個畫面的外框，外觀像一台復古遊戲機：
+ * - DeviceShell：黃色機身，有質感陰影
+ * - DeviceHeader：品牌名稱 + 狀態燈
+ * - DeviceScreen：主要的內容顯示區域（可捲動）
+ * - DeviceControls：裝飾用的十字鍵和圓形按鈕
+ *
+ * Props:
+ * - isFeedbackActive: 送出表單後是否短暫套用回饋動畫（機身漣漪 + 狀態燈閃爍）
+ */
 interface RetroDeviceFrameProps {
   isFeedbackActive?: boolean;
 }
