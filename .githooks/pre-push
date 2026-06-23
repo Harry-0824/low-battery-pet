@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Running pre-push validation: npm run check"
+npm run check
+status=$?
+
+if [ "$status" -ne 0 ]; then
+  echo "Push blocked because npm run check failed."
+  exit "$status"
+fi

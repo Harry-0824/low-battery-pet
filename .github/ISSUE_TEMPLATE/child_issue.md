@@ -2,7 +2,7 @@
 name: Child Issue
 about: Define one focused Codex-ready implementation task.
 title: "Chore: "
-labels: ""
+labels: "type:child,status:ready-for-codex"
 assignees: ""
 ---
 
