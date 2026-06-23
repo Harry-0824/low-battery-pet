@@ -2,7 +2,7 @@
 name: Parent Issue
 about: Plan product direction and child implementation issues.
 title: "Parent: "
-labels: ""
+labels: "type:parent,agent:gpt"
 assignees: ""
 ---
 
