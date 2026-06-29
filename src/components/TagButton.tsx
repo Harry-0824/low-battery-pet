@@ -14,21 +14,34 @@ import { Button } from "./TagButton.styles";
  */
 interface TagButtonProps {
   describedBy?: string;
+  icon?: string;
   isSelected: boolean;
   label: string;
   onClick: () => void;
+  polarity?: "positive" | "neutral" | "negative";
 }
 
-function TagButton({ describedBy, isSelected, label, onClick }: TagButtonProps) {
+function TagButton({
+  describedBy,
+  icon,
+  isSelected,
+  label,
+  onClick,
+  polarity = "neutral"
+}: TagButtonProps) {
   return (
     <Button
       type="button"
       aria-describedby={describedBy}
+      aria-label={label}
       aria-pressed={isSelected}
       $isSelected={isSelected}
+      $polarity={polarity}
+      data-polarity={polarity}
       onClick={onClick}
     >
-      {label}
+      {icon ? <span aria-hidden="true">{icon}</span> : null}
+      <span>{label}</span>
     </Button>
   );
 }

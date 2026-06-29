@@ -115,11 +115,47 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByText("今天電量如何？")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "有電" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "雀躍" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "平靜" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "還行" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "快沒電" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "很煩" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "有點孤單" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "腦袋空白" })).toBeTruthy();
+  });
+
+  it("renders the full emotion spectrum and positive context tags", () => {
+    render(<App />);
+
+    const spectrum = screen.getByLabelText("情緒光譜");
+    const moodButtons = within(spectrum).getAllByRole("button");
+
+    expect(moodButtons.map((button) => button.getAttribute("aria-label"))).toEqual([
+      "有電",
+      "雀躍",
+      "平靜",
+      "還行",
+      "快沒電",
+      "很煩",
+      "有點孤單",
+      "腦袋空白"
+    ]);
+    expect(screen.getByRole("button", { name: "有電" }).getAttribute("data-polarity")).toBe(
+      "positive"
+    );
+    expect(screen.getByRole("button", { name: "平靜" }).getAttribute("data-polarity")).toBe(
+      "positive"
+    );
+    expect(screen.getByRole("button", { name: "還行" }).getAttribute("data-polarity")).toBe(
+      "neutral"
+    );
+    expect(screen.getByRole("button", { name: "快沒電" }).getAttribute("data-polarity")).toBe(
+      "negative"
+    );
+    expect(screen.getByRole("button", { name: "做完一小件事" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "有休息到" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "有人陪一下" })).toBeTruthy();
   });
 
   it("initially has no selected mood and disables submit with helper text", () => {

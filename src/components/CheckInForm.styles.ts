@@ -55,6 +55,16 @@ export const ButtonGrid = styled.div`
   }
 `;
 
+export const MoodSpectrumGrid = styled(ButtonGrid)`
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, #f4c95d 0%, #e7d39a 38%, #9fb2c3 68%, #6f8798 100%) 1;
+  padding-left: 10px;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+`;
+
 export const HelperText = styled.p`
   margin: 0;
   color: #7c2d12;

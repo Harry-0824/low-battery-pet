@@ -1,5 +1,12 @@
 import type { ContextTag, MoodTag } from "../features/checkIn/checkInTypes";
-import { ButtonGrid, Form, HelperText, Section, SubmitButton } from "./CheckInForm.styles";
+import {
+  ButtonGrid,
+  Form,
+  HelperText,
+  MoodSpectrumGrid,
+  Section,
+  SubmitButton
+} from "./CheckInForm.styles";
 import TagButton from "./TagButton";
 
 /**
@@ -12,15 +19,26 @@ import TagButton from "./TagButton";
  *
  * 表單送出前會先檢查是否有選擇心情（心情為必填）。
  */
-const moodOptions: Array<{ value: MoodTag; label: string }> = [
-  { value: "okay", label: "還行" },
-  { value: "low_battery", label: "快沒電" },
-  { value: "annoyed", label: "很煩" },
-  { value: "lonely", label: "有點孤單" },
-  { value: "no_thoughts", label: "腦袋空白" }
+const moodOptions: Array<{
+  value: MoodTag;
+  label: string;
+  icon: string;
+  polarity: "positive" | "neutral" | "negative";
+}> = [
+  { value: "energized", label: "有電", icon: "⚡", polarity: "positive" },
+  { value: "joyful", label: "雀躍", icon: "♪", polarity: "positive" },
+  { value: "content", label: "平靜", icon: "☀", polarity: "positive" },
+  { value: "okay", label: "還行", icon: "·", polarity: "neutral" },
+  { value: "low_battery", label: "快沒電", icon: "▵", polarity: "negative" },
+  { value: "annoyed", label: "很煩", icon: "!", polarity: "negative" },
+  { value: "lonely", label: "有點孤單", icon: "○", polarity: "negative" },
+  { value: "no_thoughts", label: "腦袋空白", icon: "…", polarity: "negative" }
 ];
 
 const contextOptions: Array<{ value: ContextTag; label: string }> = [
+  { value: "small_win", label: "做完一小件事" },
+  { value: "rested_well", label: "有休息到" },
+  { value: "connected", label: "有人陪一下" },
   { value: "wallet_pressure", label: "錢包有壓力" },
   { value: "work_stress", label: "工作太滿" },
   { value: "social_fatigue", label: "社交疲勞" },
@@ -71,17 +89,19 @@ function CheckInForm({
             {helperText}
           </HelperText>
         ) : null}
-        <ButtonGrid>
+        <MoodSpectrumGrid aria-label="情緒光譜">
           {moodOptions.map((option) => (
             <TagButton
               key={option.value}
+              icon={option.icon}
               label={option.label}
+              polarity={option.polarity}
               isSelected={selectedMoodTag === option.value}
               describedBy={helperText ? moodHelperId : undefined}
               onClick={() => onMoodSelect(option.value)}
             />
           ))}
-        </ButtonGrid>
+        </MoodSpectrumGrid>
       </Section>
 
       <Section>
