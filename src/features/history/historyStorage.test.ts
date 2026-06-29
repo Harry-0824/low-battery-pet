@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { deriveUserState } from "../checkIn/deriveUserState";
+import { calculatePetState } from "../pet/petStateEngine";
 import type { CheckInHistoryRecord } from "./historyTypes";
 import {
   CHECK_IN_HISTORY_STORAGE_KEY,
@@ -12,6 +14,8 @@ import {
   loadCheckInHistory,
   saveCheckInRecord
 } from "./historyStorage";
+
+type StoredCheckInHistoryRecord = CheckInHistoryRecord & { dataVersion: number };
 
 const createRecord = (
   createdAt: string,
@@ -45,6 +49,11 @@ const createRecord = (
   createdAt
 });
 
+const withDataVersion = (record: CheckInHistoryRecord): StoredCheckInHistoryRecord => ({
+  ...record,
+  dataVersion: 2
+});
+
 describe("historyStorage", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -62,6 +71,10 @@ describe("historyStorage", () => {
     saveCheckInRecord(newerRecord);
 
     expect(loadCheckInHistory()).toEqual([newerRecord, olderRecord]);
+    expect(JSON.parse(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY) ?? "[]")).toEqual([
+      withDataVersion(newerRecord),
+      withDataVersion(olderRecord)
+    ]);
   });
 
   it("keeps only the latest history record limit", () => {
@@ -101,7 +114,7 @@ describe("historyStorage", () => {
     expect(records).toEqual([otherDayRecord]);
     expect(loadCheckInHistory()).toEqual([otherDayRecord]);
     expect(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY)).toBe(
-      JSON.stringify([otherDayRecord])
+      JSON.stringify([withDataVersion(otherDayRecord)])
     );
   });
 
@@ -122,6 +135,155 @@ describe("historyStorage", () => {
     ];
 
     expect(getCompanionDayCount(records)).toBe(2);
+  });
+
+  it("migrates legacy array records to dataVersion 2 and keeps companion day count", () => {
+    const legacyRecord = {
+      moodTag: "low_battery",
+      contextTags: ["wallet_pressure"],
+      shortText: "Need a quiet day",
+      derivedUserState: deriveUserState({
+        moodTag: "low_battery",
+        contextTags: ["wallet_pressure"]
+      }),
+      companionReply: {
+        reply: "Reply",
+        petLine: "Pet line",
+        tinyAction: "Tiny action",
+        tone: "calm",
+        note: "Small note"
+      },
+      createdAt: "2026-06-08T10:00:00.000Z"
+    };
+    const existingVersion2Record = withDataVersion(createRecord("2026-06-09T10:00:00.000Z"));
+
+    localStorage.setItem(
+      CHECK_IN_HISTORY_STORAGE_KEY,
+      JSON.stringify([legacyRecord, existingVersion2Record])
+    );
+
+    const migratedRecords = loadCheckInHistory();
+
+    expect(getCompanionDayCount(migratedRecords)).toBe(2);
+    expect(migratedRecords).toEqual([
+      createRecord("2026-06-09T10:00:00.000Z"),
+      {
+        ...legacyRecord,
+        petState: calculatePetState(
+          deriveUserState({
+            moodTag: "low_battery",
+            contextTags: ["wallet_pressure"]
+          })
+        )
+      }
+    ]);
+    expect(JSON.parse(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY) ?? "[]")).toEqual(
+      migratedRecords.map(withDataVersion)
+    );
+  });
+
+  it("migrates legacy version 1 payload records", () => {
+    const legacyRecord = {
+      moodTag: "annoyed",
+      contextTags: ["work_stress"],
+      shortText: "Too many tabs open",
+      companionReply: {
+        reply: "Reply",
+        petLine: "Pet line",
+        tinyAction: "Tiny action",
+        tone: "calm"
+      },
+      createdAt: "2026-06-08T10:00:00.000Z"
+    };
+
+    localStorage.setItem(
+      CHECK_IN_HISTORY_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        payload: [legacyRecord]
+      })
+    );
+
+    const migratedRecords = loadCheckInHistory();
+
+    expect(migratedRecords).toEqual([
+      {
+        ...legacyRecord,
+        contextTags: ["work_stress"],
+        shortText: "Too many tabs open",
+        derivedUserState: deriveUserState({
+          moodTag: "annoyed",
+          contextTags: ["work_stress"]
+        }),
+        petState: calculatePetState(
+          deriveUserState({
+            moodTag: "annoyed",
+            contextTags: ["work_stress"]
+          })
+        )
+      }
+    ]);
+    expect(JSON.parse(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY) ?? "[]")).toEqual(
+      migratedRecords.map(withDataVersion)
+    );
+  });
+
+  it("keeps valid dataVersion 2 records as-is", () => {
+    const record = withDataVersion(createRecord("2026-06-08T10:00:00.000Z", "low"));
+
+    localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify([record]));
+
+    expect(loadCheckInHistory()).toEqual([createRecord("2026-06-08T10:00:00.000Z", "low")]);
+    expect(JSON.parse(localStorage.getItem(CHECK_IN_HISTORY_STORAGE_KEY) ?? "[]")).toEqual([
+      record
+    ]);
+  });
+
+  it("falls back to empty history when stored JSON is broken", () => {
+    localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, "{broken");
+
+    expect(loadCheckInHistory()).toEqual([]);
+  });
+
+  it("drops records missing moodTag or createdAt during migration", () => {
+    const validRecord = {
+      moodTag: "okay",
+      contextTags: ["want_to_rest"],
+      shortText: "Small note",
+      derivedUserState: deriveUserState({
+        moodTag: "okay",
+        contextTags: ["want_to_rest"]
+      }),
+      companionReply: {
+        reply: "Reply",
+        petLine: "Pet line",
+        tinyAction: "Tiny action",
+        tone: "calm",
+        note: "Small note"
+      },
+      createdAt: "2026-06-08T10:00:00.000Z"
+    };
+
+    localStorage.setItem(
+      CHECK_IN_HISTORY_STORAGE_KEY,
+      JSON.stringify([
+        { ...validRecord, moodTag: undefined },
+        { ...validRecord, createdAt: undefined },
+        validRecord
+      ])
+    );
+
+    expect(loadCheckInHistory()).toEqual([
+      {
+        ...validRecord,
+        petState: calculatePetState(
+          deriveUserState({
+            moodTag: "okay",
+            contextTags: ["want_to_rest"]
+          })
+        )
+      }
+    ]);
   });
 
   it("builds a seven-day battery trail ending on the reference date", () => {

@@ -1,4 +1,5 @@
 import type { CheckInHistoryRecord } from "./historyTypes";
+import { migrate, toCurrentVersionRecord } from "./schemaVersion";
 
 /**
  * 歷史儲存模組
@@ -42,9 +43,22 @@ export const loadCheckInHistory = (): CheckInHistoryRecord[] => {
     return [];
   }
 
-  const records = JSON.parse(storedValue) as CheckInHistoryRecord[];
+  const records = parseStoredHistory(storedValue);
 
-  return sortNewestFirst(records).slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
+  if (!records) {
+    localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
+    return [];
+  }
+
+  const sortedRecords = sortNewestFirst(records).slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
+
+  if (sortedRecords.length === 0) {
+    localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
+  } else {
+    localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify(sortedRecords));
+  }
+
+  return sortedRecords.map(stripDataVersion);
 };
 
 /**
@@ -54,13 +68,13 @@ export const loadCheckInHistory = (): CheckInHistoryRecord[] => {
  * 避免 localStorage 無限膨脹。
  */
 export const saveCheckInRecord = (record: CheckInHistoryRecord): CheckInHistoryRecord[] => {
-  const records = [record, ...loadCheckInHistory()]
+  const records = [toCurrentVersionRecord(record), ...loadCheckInHistory().map(toCurrentVersionRecord)]
     .sort(compareNewestFirst)
     .slice(0, CHECK_IN_HISTORY_RECORD_LIMIT);
 
   localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify(records));
 
-  return records;
+  return records.map(stripDataVersion);
 };
 
 /** 清除所有歷史紀錄（localStorage + React state） */
@@ -83,7 +97,10 @@ export const deleteCheckInHistoryDay = (createdAt: string): CheckInHistoryRecord
   if (records.length === 0) {
     localStorage.removeItem(CHECK_IN_HISTORY_STORAGE_KEY);
   } else {
-    localStorage.setItem(CHECK_IN_HISTORY_STORAGE_KEY, JSON.stringify(records));
+    localStorage.setItem(
+      CHECK_IN_HISTORY_STORAGE_KEY,
+      JSON.stringify(records.map(toCurrentVersionRecord))
+    );
   }
 
   return records;
@@ -154,6 +171,43 @@ const sortNewestFirst = (records: CheckInHistoryRecord[]) => [...records].sort(c
 
 const compareNewestFirst = (first: CheckInHistoryRecord, second: CheckInHistoryRecord) =>
   second.createdAt.localeCompare(first.createdAt);
+
+const stripDataVersion = (record: CheckInHistoryRecord): CheckInHistoryRecord => {
+  const historyRecord = { ...record } as CheckInHistoryRecord & { dataVersion?: number };
+  delete historyRecord.dataVersion;
+
+  return historyRecord;
+};
+
+const parseStoredHistory = (storedValue: string): CheckInHistoryRecord[] | null => {
+  try {
+    const rawRecords = extractStoredRecords(JSON.parse(storedValue));
+
+    return rawRecords.flatMap((record) => {
+      const migratedRecord = migrate(record);
+
+      return migratedRecord ? [migratedRecord] : [];
+    });
+  } catch {
+    return null;
+  }
+};
+
+const extractStoredRecords = (storedValue: unknown): unknown[] => {
+  if (Array.isArray(storedValue)) {
+    return storedValue;
+  }
+
+  if (storedValue && typeof storedValue === "object") {
+    const storageEnvelope = storedValue as Record<string, unknown>;
+
+    if (Array.isArray(storageEnvelope.payload)) {
+      return storageEnvelope.payload;
+    }
+  }
+
+  return [];
+};
 
 const isLowPowerRecord = (record: CheckInHistoryRecord) =>
   record.derivedUserState.energyLevel === "low" ||
