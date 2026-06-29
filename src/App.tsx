@@ -42,11 +42,11 @@ import {
   deleteCheckInHistoryDay,
   getCompanionDayCount,
   getPetStateMemoryMessage,
-  getRecentBatteryTrail,
   loadCheckInHistory,
   saveCheckInRecord
 } from "./features/history/historyStorage";
 import type { CheckInHistoryRecord, FollowUpOption } from "./features/history/historyTypes";
+import { getRecentBatteryTrail } from "./features/history/historyView";
 import type { PetState } from "./features/pet/petTypes";
 import { calculatePetState } from "./features/pet/petStateEngine";
 import { generateCompanionReply } from "./features/reply/companionReplyEngine";

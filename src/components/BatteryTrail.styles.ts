@@ -10,35 +10,35 @@ import styled from "styled-components";
  * - DayLabel / DayStatus: 日期和狀態文字
  */
 
-import type { BatteryTrailEnergyLevel } from "../features/history/historyStorage";
+import type { BatteryTrailPolarity } from "../features/history/historyView";
 
 const trailColor = {
-  full: {
+  pos: {
     border: "#f4c95d",
-    background: "#fff8dc",
+    background: "#fff5c4",
     text: "#7c4a03"
   },
-  critical: {
-    border: "#fca5a5",
-    background: "#fee2e2",
-    text: "#991b1b"
+  calm: {
+    border: "#e7d39a",
+    background: "#fffaf0",
+    text: "#67512f"
   },
   low: {
-    border: "#fed7aa",
-    background: "#fff7ed",
-    text: "#9a3412"
+    border: "#b8c4cf",
+    background: "#f1f5f9",
+    text: "#425466"
   },
-  normal: {
-    border: "#bbf7d0",
-    background: "#f0fdf4",
-    text: "#166534"
+  crit: {
+    border: "#9aa7b4",
+    background: "#e8edf2",
+    text: "#334155"
   },
   empty: {
     border: "#d7dde6",
     background: "#f8fafc",
     text: "#5f6b7a"
   }
-} satisfies Record<BatteryTrailEnergyLevel, { border: string; background: string; text: string }>;
+} satisfies Record<BatteryTrailPolarity, { border: string; background: string; text: string }>;
 
 export const TrailSection = styled.section`
   display: grid;
@@ -85,13 +85,13 @@ export const TrailGrid = styled.div`
   }
 `;
 
-export const DayPip = styled.div<{ $energyLevel: BatteryTrailEnergyLevel }>`
+export const DayPip = styled.div<{ $polarity: BatteryTrailPolarity }>`
   min-height: 58px;
-  border: 1px solid ${({ $energyLevel }) => trailColor[$energyLevel].border};
+  border: 1px solid ${({ $polarity }) => trailColor[$polarity].border};
   border-radius: 8px;
   padding: 6px 4px;
-  background: ${({ $energyLevel }) => trailColor[$energyLevel].background};
-  color: ${({ $energyLevel }) => trailColor[$energyLevel].text};
+  background: ${({ $polarity }) => trailColor[$polarity].background};
+  color: ${({ $polarity }) => trailColor[$polarity].text};
   text-align: center;
   overflow-wrap: anywhere;
 

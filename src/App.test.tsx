@@ -432,6 +432,16 @@ describe("App", () => {
   });
 
   it("shows a soft recent seven-day battery trail from local history", () => {
+    const positiveRecord = {
+      ...createHistoryRecord(getDateDaysAgo(3), "full"),
+      moodTag: "energized" as const,
+      derivedUserState: {
+        ...createHistoryRecord(getDateDaysAgo(3), "full").derivedUserState,
+        mood: "bright" as const
+      }
+    };
+
+    saveCheckInRecord(positiveRecord);
     saveCheckInRecord(createHistoryRecord(getDateDaysAgo(2), "critical"));
     saveCheckInRecord(createHistoryRecord(getDateDaysAgo(1), "low"));
     saveCheckInRecord(createHistoryRecord(getDateDaysAgo(0), "normal"));
@@ -444,7 +454,11 @@ describe("App", () => {
     expect(within(trail).getAllByTestId("battery-trail-day")).toHaveLength(7);
     expect(within(trail).getByText("快沒電")).toBeTruthy();
     expect(within(trail).getByText("低電量")).toBeTruthy();
-    expect(within(trail).getByText("有一點亮")).toBeTruthy();
+    expect(within(trail).getByText("平穩")).toBeTruthy();
+    expect(within(trail).getByText("有電")).toBeTruthy();
+    expect(within(trail).getByTitle("那天有一點暖暖的電").getAttribute("data-polarity")).toBe(
+      "pos"
+    );
   });
 
   it("loads saved history records newest first with localized summaries", () => {
@@ -500,10 +514,19 @@ describe("App", () => {
   });
 
   it("clears saved history and updates the visible history state", () => {
+    vi.useFakeTimers();
     saveCheckInRecord(createHistoryRecord("2026-06-08T10:00:00.000Z"));
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "放下這些紀錄" }));
+
+    expect(screen.getByRole("button", { name: "正在收進樹洞" })).toBeTruthy();
+    expect(screen.getByText("小電量獸把這 7 天輕輕收進樹洞了。")).toBeTruthy();
+    expect(screen.getByTestId("history-card")).toBeTruthy();
+
+    act(() => {
+      vi.advanceTimersByTime(720);
+    });
 
     expect(screen.queryByTestId("history-card")).toBeNull();
     expect(screen.getByText("紀錄已經放下了")).toBeTruthy();
@@ -533,7 +556,7 @@ describe("App", () => {
     expect(screen.getByTestId("history-card").textContent).toContain("6/21");
     expect(screen.getByTestId("companion-days").textContent).toBe("小電量獸陪你 1 天了");
     expect(within(screen.getByTestId("battery-trail")).queryByText("快沒電")).toBeNull();
-    expect(within(screen.getByTestId("battery-trail")).getByText("有一點亮")).toBeTruthy();
+    expect(within(screen.getByTestId("battery-trail")).getByText("平穩")).toBeTruthy();
     expect(loadCheckInHistory()).toEqual([yesterdayRecord]);
   });
 

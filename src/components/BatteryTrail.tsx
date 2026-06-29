@@ -1,4 +1,4 @@
-import type { BatteryTrailDay, BatteryTrailEnergyLevel } from "../features/history/historyStorage";
+import type { BatteryTrailDay, BatteryTrailPolarity } from "../features/history/historyView";
 import {
   DayLabel,
   DayPip,
@@ -15,27 +15,27 @@ import {
  * 依能量等級顯示不同顏色和標語的空氣品質圖樣式元件。
  */
 const batteryTrailCopy = {
-  full: {
+  pos: {
     label: "有電",
-    title: "今天小電量獸有亮一點"
+    title: "那天有一點暖暖的電"
   },
-  critical: {
-    label: "快沒電",
-    title: "那天很低電量"
+  calm: {
+    label: "平穩",
+    title: "那天有一點安穩"
   },
   low: {
     label: "低電量",
     title: "那天有點低電量"
   },
-  normal: {
-    label: "有一點亮",
-    title: "那天有一點亮"
+  crit: {
+    label: "快沒電",
+    title: "那天很低電量"
   },
   empty: {
     label: "慢慢來",
     title: "那天沒有留下紀錄，也可以慢慢來"
   }
-} satisfies Record<BatteryTrailEnergyLevel, { label: string; title: string }>;
+} satisfies Record<BatteryTrailPolarity, { label: string; title: string }>;
 
 interface BatteryTrailProps {
   days: BatteryTrailDay[];
@@ -50,7 +50,7 @@ interface BatteryTrailProps {
  * - 若 7 天全都是空的，則顯示鼓勵訊息而非格子
  */
 function BatteryTrail({ days }: BatteryTrailProps) {
-  const isEmptyTrail = days.every((day) => day.energyLevel === "empty");
+  const isEmptyTrail = days.every((day) => day.polarity === "empty");
 
   return (
     <TrailSection aria-label="最近 7 天的小電量足跡" data-testid="battery-trail">
@@ -62,12 +62,13 @@ function BatteryTrail({ days }: BatteryTrailProps) {
           <TrailIntro>有紀錄的日子會亮一下，空白也可以慢慢來。</TrailIntro>
           <TrailGrid>
             {days.map((day) => {
-              const copy = batteryTrailCopy[day.energyLevel];
+              const copy = batteryTrailCopy[day.polarity];
 
               return (
                 <DayPip
                   key={day.dateKey}
-                  $energyLevel={day.energyLevel}
+                  $polarity={day.polarity}
+                  data-polarity={day.polarity}
                   data-testid="battery-trail-day"
                   title={copy.title}
                 >

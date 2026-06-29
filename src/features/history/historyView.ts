@@ -1,5 +1,20 @@
 import type { CheckInHistoryRecord } from "./historyTypes";
 
+export type BatteryTrailPolarity = "pos" | "calm" | "low" | "crit" | "empty";
+
+export type BatteryTrailEnergyLevel =
+  | CheckInHistoryRecord["derivedUserState"]["energyLevel"]
+  | "empty";
+
+export interface BatteryTrailDay {
+  dateKey: string;
+  label: string;
+  energyLevel: BatteryTrailEnergyLevel;
+  polarity: BatteryTrailPolarity;
+}
+
+const RECENT_BATTERY_TRAIL_DAYS = 7;
+
 /**
  * 歷史檢視格式化模組
  *
@@ -40,6 +55,35 @@ const petSummary = {
   grumpy: "小電量獸炸毛中",
   hungry: "小電量獸抱著飯糰"
 } satisfies Record<CheckInHistoryRecord["petState"]["mood"], string>;
+
+export const getRecentBatteryTrail = (
+  records: CheckInHistoryRecord[],
+  referenceDate = new Date()
+): BatteryTrailDay[] => {
+  const latestRecordByDate = new Map<string, CheckInHistoryRecord>();
+
+  for (const record of sortNewestFirst(records)) {
+    const dateKey = getLocalDateKey(record.createdAt);
+
+    if (!latestRecordByDate.has(dateKey)) {
+      latestRecordByDate.set(dateKey, record);
+    }
+  }
+
+  return Array.from({ length: RECENT_BATTERY_TRAIL_DAYS }, (_, index) => {
+    const daysAgo = RECENT_BATTERY_TRAIL_DAYS - index - 1;
+    const date = getShiftedLocalDate(referenceDate, -daysAgo);
+    const dateKey = getLocalDateKey(date);
+    const record = latestRecordByDate.get(dateKey);
+
+    return {
+      dateKey,
+      label: formatTrailDateLabel(date, daysAgo),
+      energyLevel: record?.derivedUserState.energyLevel ?? "empty",
+      polarity: record ? getBatteryTrailPolarity(record) : "empty"
+    };
+  });
+};
 
 /**
  * 格式化歷史紀錄的建立時間
@@ -94,6 +138,55 @@ export const formatHistoryReplySummary = (record: CheckInHistoryRecord) => {
   const [firstSentence] = record.companionReply.reply.split(".");
 
   return firstSentence ? `${firstSentence}.` : record.companionReply.reply;
+};
+
+const sortNewestFirst = (records: CheckInHistoryRecord[]) =>
+  [...records].sort((first, second) => second.createdAt.localeCompare(first.createdAt));
+
+const getBatteryTrailPolarity = (record: CheckInHistoryRecord): BatteryTrailPolarity => {
+  if (record.derivedUserState.energyLevel === "critical") {
+    return "crit";
+  }
+
+  if (record.derivedUserState.energyLevel === "low") {
+    return "low";
+  }
+
+  if (record.moodTag === "energized" || record.moodTag === "joyful") {
+    return "pos";
+  }
+
+  return "calm";
+};
+
+const getLocalDateKey = (createdAt: string | Date) => {
+  const date = new Date(createdAt);
+
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
+};
+
+const getShiftedLocalDate = (date: Date, dayOffset: number) => {
+  const shiftedDate = new Date(date);
+  shiftedDate.setHours(12, 0, 0, 0);
+  shiftedDate.setDate(shiftedDate.getDate() + dayOffset);
+
+  return shiftedDate;
+};
+
+const formatTrailDateLabel = (date: Date, daysAgo: number) => {
+  if (daysAgo === 0) {
+    return "今天";
+  }
+
+  if (daysAgo === 1) {
+    return "昨天";
+  }
+
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
 const padTime = (value: number) => String(value).padStart(2, "0");
