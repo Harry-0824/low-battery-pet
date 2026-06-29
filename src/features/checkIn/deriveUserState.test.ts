@@ -91,4 +91,45 @@ describe("deriveUserState", () => {
     expect(result.stressLevel).toBe("low");
     expect(result.needsRest).toBe(true);
   });
+
+  it.each([
+    {
+      input: { moodTag: "energized" as const, contextTags: ["work_stress"] as const },
+      expected: {
+        mood: "bright",
+        energyLevel: "full",
+        stressLevel: "high",
+        needsRest: false,
+        hasWalletPressure: false
+      }
+    },
+    {
+      input: { moodTag: "content" as const, contextTags: ["wallet_pressure"] as const },
+      expected: {
+        mood: "content",
+        energyLevel: "normal",
+        stressLevel: "low",
+        needsRest: false,
+        hasWalletPressure: true
+      }
+    },
+    {
+      input: { moodTag: "joyful" as const, contextTags: ["want_to_rest"] as const },
+      expected: {
+        mood: "bright",
+        energyLevel: "normal",
+        stressLevel: "low",
+        needsRest: true,
+        hasWalletPressure: false
+      }
+    }
+  ])("keeps positive mood derivation deterministic for %#", ({ input, expected }) => {
+    const result = deriveUserState({ ...input, contextTags: [...input.contextTags] });
+
+    expect(result).toMatchObject({
+      ...expected,
+      needsComfort: false,
+      needsFoodSuggestion: false
+    });
+  });
 });

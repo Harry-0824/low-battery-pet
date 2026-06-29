@@ -119,6 +119,21 @@ describe("generateCompanionReply", () => {
   });
 
   it.each([
+    createInput("energized", ["work_stress"]),
+    createInput("content", ["wallet_pressure"]),
+    createInput("joyful", ["want_to_rest"])
+  ])("keeps positive branch selection deterministic for %#", (input) => {
+    expect(generateCompanionReply(input)).toEqual(generateCompanionReply(input));
+  });
+
+  it("keeps calm wallet pressure reply practical instead of celebratory", () => {
+    expect(generateCompanionReply(createInput("content", ["wallet_pressure"]))).toMatchObject({
+      tinyAction: "只看一眼下一個到期日，看完就讓它先躺著。",
+      tone: "calm"
+    });
+  });
+
+  it.each([
     {
       moodTag: "no_thoughts" as const,
       contextTags: ["work_stress"] as const,
