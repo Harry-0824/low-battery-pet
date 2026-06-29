@@ -4,9 +4,6 @@ import { calculatePetState } from "../pet/petStateEngine";
 import type { PetMoodState } from "../pet/petTypes";
 import type { CompanionReply, CompanionReplyInput, ReplyTone } from "./replyTypes";
 
-type ExistingMoodTag = Exclude<MoodTag, "energized" | "joyful" | "content">;
-type ExistingPetMoodState = Exclude<PetMoodState, "charged" | "joyful" | "calm">;
-
 /**
  * 陪伴回覆生成引擎
  *
@@ -19,12 +16,36 @@ type ExistingPetMoodState = Exclude<PetMoodState, "charged" | "joyful" | "calm">
 
 /** 心情對應的回覆模板庫 */
 const moodTemplates: Record<
-  ExistingMoodTag,
+  MoodTag,
   {
     replies: string[];
     tone: ReplyTone;
   }
 > = {
+  energized: {
+    replies: [
+      "今天多出來的那一點亮亮，可以先不用花完。我陪你把它留一小格給之後的自己。",
+      "有電的感覺很好，也不用急著全部用掉。小電量獸幫你把這份亮度收好一點。",
+      "今天身上有一點光。我陪你慢慢走，不用把它變成很多任務。"
+    ],
+    tone: "calm"
+  },
+  joyful: {
+    replies: [
+      "這一點雀躍很珍貴。我幫你輕輕記下來，低電量的時候也可以回來看。",
+      "開心來了就先讓它坐一下，不用馬上變成什麼成果。我在旁邊陪它亮著。",
+      "今天有一小塊亮亮的時刻。我陪你把它放進口袋，之後需要時再拿出來。"
+    ],
+    tone: "warm"
+  },
+  content: {
+    replies: [
+      "平平穩穩也很好，不一定要很興奮才算有電。我陪你待在這份剛剛好裡。",
+      "現在這種安穩的電量很適合慢慢呼吸。我會在旁邊曬一點小太陽。",
+      "今天如果只是覺得還不錯，那也很夠了。小電量獸會把這份平靜抱好。"
+    ],
+    tone: "calm"
+  },
   okay: {
     replies: [
       "今天有一點電就很好。我會窩在旁邊，陪你慢慢亮著。",
@@ -68,8 +89,7 @@ const moodTemplates: Record<
 };
 
 /** 寵物狀態對應的 petLine 模板庫 */
-const petLineTemplates: Partial<Record<PetMoodState, string[]>> &
-  Record<ExistingPetMoodState, string[]> = {
+const petLineTemplates: Record<PetMoodState, string[]> = {
   idle: [
     "我會待在旁邊，慢慢眨眼。",
     "我把尾巴圈起來，陪你小小休息。",
@@ -99,6 +119,21 @@ const petLineTemplates: Partial<Record<PetMoodState, string[]>> &
     "我找到最小條的晚餐路線了。",
     "我把飯糰推近一點點，不用煮得很漂亮。",
     "我陪你選最省力的那口熱熱的。"
+  ],
+  charged: [
+    "我把小火花收成一格電，陪你留給晚一點的自己。",
+    "我今天有一點亮，但還是慢慢走就好。",
+    "我把多出來的電抱好，不急著用完。"
+  ],
+  joyful: [
+    "我在旁邊小小揮手，幫你把這一刻記起來。",
+    "我把雀躍放進口袋，之後低電量也能摸到一點暖。",
+    "我輕輕亮一下，不吵醒這份開心。"
+  ],
+  calm: [
+    "我在小太陽旁邊慢慢晃，陪你待在剛剛好。",
+    "我瞇眼曬一下暖暖的光，不用急著去哪裡。",
+    "我把這份平靜抱在肚子前面，慢慢呼吸。"
   ]
 };
 
@@ -111,8 +146,7 @@ const petLineTemplates: Partial<Record<PetMoodState, string[]>> &
 export const generateCompanionReply = (input: CompanionReplyInput): CompanionReply => {
   const derivedUserState = deriveUserState(input);
   const petState = calculatePetState(derivedUserState);
-  const moodTemplate =
-    moodTemplates[input.moodTag as ExistingMoodTag] ?? moodTemplates.okay;
+  const moodTemplate = moodTemplates[input.moodTag];
   const petLineTemplate = petLineTemplates[petState.mood] ?? petLineTemplates.idle;
   const note = input.shortText?.trim();
   const seedParts = [input.moodTag, ...input.contextTags, note ?? ""];
@@ -140,6 +174,10 @@ export const generateCompanionReply = (input: CompanionReplyInput): CompanionRep
 const composeContextAwareReply = (
   input: CompanionReplyInput
 ): string | undefined => {
+  if (isPositiveMood(input.moodTag) && hasContext(input, "work_stress")) {
+    return "有開心，也有工作壓力，兩個都可以同時在。小電量獸不催你慶祝，只陪你把這一點亮收好。";
+  }
+
   if (input.moodTag === "no_thoughts" && hasContext(input, "work_stress")) {
     return "今天腦袋被工作塞滿了也沒關係，小電量獸先陪你把下一步縮小到一口氣。";
   }
@@ -166,6 +204,9 @@ const hasContext = (
   input: CompanionReplyInput,
   contextTag: ContextTag
 ): boolean => input.contextTags.includes(contextTag);
+
+const isPositiveMood = (moodTag: MoodTag): boolean =>
+  moodTag === "energized" || moodTag === "joyful" || moodTag === "content";
 
 /**
  * 基於 seed 的穩定隨機選擇

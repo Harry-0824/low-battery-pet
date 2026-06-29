@@ -18,6 +18,33 @@ describe("generateCompanionReply", () => {
     expectedReplies: string[];
   }> = [
     {
+      moodTag: "energized",
+      expectedTone: "calm",
+      expectedReplies: [
+        "今天多出來的那一點亮亮，可以先不用花完。我陪你把它留一小格給之後的自己。",
+        "有電的感覺很好，也不用急著全部用掉。小電量獸幫你把這份亮度收好一點。",
+        "今天身上有一點光。我陪你慢慢走，不用把它變成很多任務。"
+      ]
+    },
+    {
+      moodTag: "joyful",
+      expectedTone: "warm",
+      expectedReplies: [
+        "這一點雀躍很珍貴。我幫你輕輕記下來，低電量的時候也可以回來看。",
+        "開心來了就先讓它坐一下，不用馬上變成什麼成果。我在旁邊陪它亮著。",
+        "今天有一小塊亮亮的時刻。我陪你把它放進口袋，之後需要時再拿出來。"
+      ]
+    },
+    {
+      moodTag: "content",
+      expectedTone: "calm",
+      expectedReplies: [
+        "平平穩穩也很好，不一定要很興奮才算有電。我陪你待在這份剛剛好裡。",
+        "現在這種安穩的電量很適合慢慢呼吸。我會在旁邊曬一點小太陽。",
+        "今天如果只是覺得還不錯，那也很夠了。小電量獸會把這份平靜抱好。"
+      ]
+    },
+    {
       moodTag: "okay",
       expectedTone: "calm",
       expectedReplies: [
@@ -82,6 +109,13 @@ describe("generateCompanionReply", () => {
     };
 
     expect(generateCompanionReply(input)).toEqual(generateCompanionReply(input));
+  });
+
+  it("keeps a positive high-pressure reply gentle instead of forced celebration", () => {
+    expect(generateCompanionReply(createInput("joyful", ["work_stress"]))).toMatchObject({
+      reply: "有開心，也有工作壓力，兩個都可以同時在。小電量獸不催你慶祝，只陪你把這一點亮收好。",
+      tone: "warm"
+    });
   });
 
   it.each([
@@ -174,5 +208,23 @@ describe("generateCompanionReply", () => {
       "我把飯糰推近一點點，不用煮得很漂亮。",
       "我陪你選最省力的那口熱熱的。"
     ]).toContain(generateCompanionReply(createInput("okay", ["dinner_problem"])).petLine);
+  });
+
+  it("uses localized pet lines from positive pet states", () => {
+    expect([
+      "我把小火花收成一格電，陪你留給晚一點的自己。",
+      "我今天有一點亮，但還是慢慢走就好。",
+      "我把多出來的電抱好，不急著用完。"
+    ]).toContain(generateCompanionReply(createInput("energized")).petLine);
+    expect([
+      "我在旁邊小小揮手，幫你把這一刻記起來。",
+      "我把雀躍放進口袋，之後低電量也能摸到一點暖。",
+      "我輕輕亮一下，不吵醒這份開心。"
+    ]).toContain(generateCompanionReply(createInput("joyful")).petLine);
+    expect([
+      "我在小太陽旁邊慢慢晃，陪你待在剛剛好。",
+      "我瞇眼曬一下暖暖的光，不用急著去哪裡。",
+      "我把這份平靜抱在肚子前面，慢慢呼吸。"
+    ]).toContain(generateCompanionReply(createInput("content")).petLine);
   });
 });
