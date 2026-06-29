@@ -9,15 +9,25 @@ import styled from "styled-components";
  * - 手機版按鈕寬度 100%
  */
 
-export const Button = styled.button<{ $isSelected: boolean }>`
+const polarityColor = {
+  positive: "#f4c95d",
+  neutral: "#9fb2c3",
+  negative: "#6f8798"
+};
+
+export const Button = styled.button<{
+  $isSelected: boolean;
+  $polarity: "positive" | "neutral" | "negative";
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
   min-height: 44px;
   border: 2px solid ${({ $isSelected }) => ($isSelected ? "#111827" : "#d7dde6")};
   border-radius: 999px;
-  padding: 9px 13px;
+  padding: 9px 13px 9px 17px;
   background: ${({ $isSelected }) =>
     $isSelected ? "linear-gradient(180deg, #233348 0%, #111827 100%)" : "#ffffff"};
   color: ${({ $isSelected }) => ($isSelected ? "#ffffff" : "#243142")};
@@ -27,20 +37,18 @@ export const Button = styled.button<{ $isSelected: boolean }>`
   line-height: 1.2;
   overflow-wrap: anywhere;
   box-shadow: ${({ $isSelected }) =>
-    $isSelected
-      ? "0 0 0 3px rgba(242, 140, 82, 0.24), inset 0 -2px 0 rgba(255, 255, 255, 0.12)"
-      : "none"};
+    $isSelected ? "inset 0 -2px 0 rgba(255, 255, 255, 0.12)" : "none"};
 
   &::before {
     content: "";
-    display: ${({ $isSelected }) => ($isSelected ? "inline-block" : "none")};
-    flex: 0 0 auto;
-    width: 8px;
-    height: 8px;
-    border: 2px solid #fff7ed;
+    position: absolute;
+    left: 7px;
+    top: 9px;
+    bottom: 9px;
+    width: 4px;
     border-radius: 999px;
-    background: #f6c667;
-    box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.26);
+    background: ${({ $polarity }) => polarityColor[$polarity]};
+    opacity: ${({ $isSelected }) => ($isSelected ? 1 : 0.76)};
   }
 
   @media (max-width: 420px) {
@@ -51,5 +59,9 @@ export const Button = styled.button<{ $isSelected: boolean }>`
   &:focus-visible {
     outline: 3px solid rgba(242, 140, 82, 0.45);
     outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 `;
