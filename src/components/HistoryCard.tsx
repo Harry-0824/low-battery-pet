@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import type { CheckInHistoryRecord } from "../features/history/historyTypes";
 import {
   formatHistoryContextTags,
@@ -22,9 +24,10 @@ import { Card, CardHeader, CreatedAt, DayActionButton, HistoryLine } from "./His
 interface HistoryCardProps {
   record: CheckInHistoryRecord;
   onDeleteDay: (createdAt: string) => void;
+  releaseIndex?: number;
 }
 
-function HistoryCard({ record, onDeleteDay }: HistoryCardProps) {
+function HistoryCard({ record, onDeleteDay, releaseIndex = 0 }: HistoryCardProps) {
   const createdAtLabel = formatHistoryCreatedAt(record.createdAt);
 
   const handleDeleteDay = () => {
@@ -34,7 +37,10 @@ function HistoryCard({ record, onDeleteDay }: HistoryCardProps) {
   };
 
   return (
-    <Card data-testid="history-card">
+    <Card
+      data-testid="history-card"
+      style={{ "--release-index": releaseIndex } as CSSProperties}
+    >
       <CardHeader>
         <CreatedAt>{createdAtLabel}</CreatedAt>
         <DayActionButton

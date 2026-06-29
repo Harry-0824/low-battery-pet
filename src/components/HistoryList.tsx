@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import type { CheckInHistoryRecord } from "../features/history/historyTypes";
 import {
   CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD,
@@ -8,7 +10,8 @@ import {
   ClearButton,
   HistoryHeader,
   HistoryLimitHint,
-  HistorySection
+  HistorySection,
+  ReleaseMessage
 } from "./HistoryList.styles";
 import EmptyHistoryState, { type EmptyHistoryStateKind } from "./EmptyHistoryState";
 import HistoryCard from "./HistoryCard";
@@ -30,19 +33,42 @@ interface HistoryListProps {
 }
 
 function HistoryList({ records, emptyStateKind, onClear, onDeleteDay }: HistoryListProps) {
+  const [isReleasing, setIsReleasing] = useState(false);
+  const releaseTimeoutRef = useRef<number | null>(null);
   /** 只顯示最近 3 筆，保持畫面節省空間 */
   const visibleRecords = records.slice(0, 3);
   /** 當紀錄數量 >= 27 時，顯示「只保留最近 30 筆」的提示 */
   const shouldShowLimitHint = records.length >= CHECK_IN_HISTORY_LIMIT_HINT_THRESHOLD;
   const historyTitleId = "history-title";
 
+  useEffect(() => {
+    return () => {
+      if (releaseTimeoutRef.current !== null) {
+        window.clearTimeout(releaseTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleReleaseHistory = () => {
+    if (isReleasing) {
+      return;
+    }
+
+    setIsReleasing(true);
+    releaseTimeoutRef.current = window.setTimeout(() => {
+      onClear();
+      setIsReleasing(false);
+      releaseTimeoutRef.current = null;
+    }, 720);
+  };
+
   return (
     <HistorySection aria-labelledby={historyTitleId}>
       <HistoryHeader>
         <h2 id={historyTitleId}>最近被接住的時候</h2>
         {records.length > 0 ? (
-          <ClearButton type="button" onClick={onClear}>
-            放下這些紀錄
+          <ClearButton type="button" disabled={isReleasing} onClick={handleReleaseHistory}>
+            {isReleasing ? "正在收進樹洞" : "放下這些紀錄"}
           </ClearButton>
         ) : null}
       </HistoryHeader>
@@ -52,11 +78,23 @@ function HistoryList({ records, emptyStateKind, onClear, onDeleteDay }: HistoryL
         </HistoryLimitHint>
       ) : null}
       {records.length > 0 ? (
-        <CardList>
-          {visibleRecords.map((record) => (
-            <HistoryCard key={record.createdAt} record={record} onDeleteDay={onDeleteDay} />
-          ))}
-        </CardList>
+        <>
+          <CardList data-releasing={isReleasing} aria-hidden={isReleasing ? "true" : undefined}>
+            {visibleRecords.map((record, index) => (
+              <HistoryCard
+                key={record.createdAt}
+                record={record}
+                onDeleteDay={onDeleteDay}
+                releaseIndex={index}
+              />
+            ))}
+          </CardList>
+          {isReleasing ? (
+            <ReleaseMessage aria-live="polite">
+              小電量獸把這 7 天輕輕收進樹洞了。
+            </ReleaseMessage>
+          ) : null}
+        </>
       ) : (
         <EmptyHistoryState kind={emptyStateKind} />
       )}
