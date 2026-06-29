@@ -80,5 +80,32 @@ export const calculatePetState = (derivedState: DerivedUserState): PetState => {
     };
   }
 
+  if (derivedState.energyLevel === "full") {
+    return {
+      mood: "charged",
+      animation: "bounce",
+      effect: "spark",
+      accessory: "none"
+    };
+  }
+
+  if (derivedState.mood === "bright") {
+    return {
+      mood: "joyful",
+      animation: "bounce",
+      effect: "spark",
+      accessory: "none"
+    };
+  }
+
+  if (derivedState.mood === "content") {
+    return {
+      mood: "calm",
+      animation: "sway",
+      effect: "warm_glow",
+      accessory: "sun_dot"
+    };
+  }
+
   return idleState;
 };

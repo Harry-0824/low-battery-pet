@@ -8,6 +8,9 @@
 /** 寵物的情緒狀態 */
 export type PetMoodState =
   | "idle"
+  | "charged"
+  | "joyful"
+  | "calm"
   | "low_power"
   | "stressed"
   | "lonely"
@@ -15,18 +18,20 @@ export type PetMoodState =
   | "hungry";
 
 /** 寵物的動畫類型 */
-export type PetAnimation = "idle" | "sleep" | "shake" | "hide";
+export type PetAnimation = "idle" | "sleep" | "shake" | "hide" | "bounce" | "sway";
 
 /** 寵物身上的視覺特效 */
 export type PetVisualEffect =
   | "none"
+  | "spark"
+  | "warm_glow"
   | "low_battery"
   | "black_cloud"
   | "rain"
   | "coins";
 
 /** 寵物手持/穿戴的配件 */
-export type PetAccessory = "none" | "coin" | "rice_ball";
+export type PetAccessory = "none" | "sun_dot" | "coin" | "rice_ball";
 
 /**
  * 寵物在畫面上的完整狀態描述
