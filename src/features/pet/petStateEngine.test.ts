@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { DerivedUserState } from "../checkIn/checkInTypes";
+import { deriveUserState } from "../checkIn/deriveUserState";
 import { calculatePetState } from "./petStateEngine";
 
 const createDerivedState = (
@@ -200,6 +201,25 @@ describe("calculatePetState", () => {
       effect: "coins",
       accessory: "coin"
     });
+  });
+
+  it.each([
+    {
+      input: { moodTag: "energized" as const, contextTags: ["work_stress"] as const },
+      expectedPetMood: "stressed"
+    },
+    {
+      input: { moodTag: "content" as const, contextTags: ["wallet_pressure"] as const },
+      expectedPetMood: "grumpy"
+    },
+    {
+      input: { moodTag: "joyful" as const, contextTags: ["want_to_rest"] as const },
+      expectedPetMood: "joyful"
+    }
+  ])("calculates deterministic positive priority state for %#", ({ input, expectedPetMood }) => {
+    expect(calculatePetState(deriveUserState({ ...input, contextTags: [...input.contextTags] })).mood).toBe(
+      expectedPetMood
+    );
   });
 
   it("returns an idle pet state for the neutral baseline", () => {
