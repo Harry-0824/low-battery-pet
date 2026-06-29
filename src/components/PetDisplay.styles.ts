@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 /**
  * PetDisplay.styles.ts
@@ -31,11 +31,115 @@ export const StatusText = styled.p`
   color: #243142;
 `;
 
+const petBounce = keyframes`
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+`;
+
+const petSway = keyframes`
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+
+  50% {
+    transform: rotate(1.5deg);
+  }
+`;
+
+const sparkTwinkle = keyframes`
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+`;
+
 export const PixelPetVisual = styled.div`
   position: relative;
   width: 120px;
   height: 120px;
   margin: 0 auto;
+
+  &[data-visual-state="charged"],
+  &[data-visual-state="joyful"] {
+    .cloud {
+      background: #fde68a;
+    }
+
+    .spark {
+      opacity: 1;
+      box-shadow: 0 0 0 4px rgba(246, 198, 103, 0.2);
+    }
+  }
+
+  &[data-visual-state="charged"] {
+    filter: drop-shadow(0 8px 14px rgba(246, 198, 103, 0.22));
+  }
+
+  &[data-visual-state="joyful"] {
+    filter: drop-shadow(0 8px 14px rgba(127, 176, 105, 0.18));
+
+    .pet-mouth {
+      height: 8px;
+      border-radius: 0 0 999px 999px;
+    }
+  }
+
+  &[data-visual-state="calm"] {
+    filter: drop-shadow(0 8px 14px rgba(245, 158, 11, 0.16));
+
+    .cloud {
+      background: #fed7aa;
+    }
+
+    .spark {
+      opacity: 0;
+    }
+
+    .sun-dot {
+      opacity: 1;
+    }
+
+    .pet-eye {
+      top: 16px;
+      height: 4px;
+      border-radius: 999px;
+    }
+
+    .pet-mouth {
+      width: 16px;
+      height: 3px;
+      opacity: 0.75;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &.pet-anim-bounce {
+      animation: ${petBounce} 1.8s ease-in-out infinite;
+    }
+
+    &.pet-anim-sway {
+      animation: ${petSway} 2.8s ease-in-out infinite;
+      transform-origin: 50% 90%;
+    }
+
+    &[data-visual-state="charged"] .spark,
+    &[data-visual-state="joyful"] .spark {
+      animation: ${sparkTwinkle} 1.4s ease-in-out infinite;
+    }
+  }
 `;
 
 export const PixelCloud = styled.div`
@@ -57,6 +161,19 @@ export const PixelSpark = styled.span<{ $placement: "left" | "right" }>`
   background: #f6c667;
   border-radius: 999px;
   left: ${({ $placement }) => ($placement === "left" ? "24px" : "88px")};
+  opacity: 0.65;
+`;
+
+export const PixelSunDot = styled.span`
+  position: absolute;
+  top: 2px;
+  right: 30px;
+  width: 14px;
+  height: 14px;
+  background: #f59e0b;
+  border-radius: 999px;
+  box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.16);
+  opacity: 0;
 `;
 
 export const PixelBattery = styled.div`

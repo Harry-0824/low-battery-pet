@@ -10,6 +10,7 @@ import {
   PixelMouth,
   PixelPetVisual,
   PixelSpark,
+  PixelSunDot,
   StatusText
 } from "./PetDisplay.styles";
 
@@ -22,7 +23,15 @@ interface PetDisplayCopy {
   status: string;
 }
 
-type PetVisualState = "okay" | "drained" | "overloaded" | "lonely" | "low";
+type PetVisualState =
+  | "okay"
+  | "charged"
+  | "joyful"
+  | "calm"
+  | "drained"
+  | "overloaded"
+  | "lonely"
+  | "low";
 
 /**
  * PetDisplay 元件
@@ -43,18 +52,20 @@ function PetDisplay({ petState }: PetDisplayProps) {
     <Display aria-label="小電量獸狀態">
       <PixelPetVisual
         aria-hidden="true"
+        className={`pet-anim-${petState.animation}`}
         data-testid="pixel-pet-visual"
         data-visual-state={visualState}
       >
-        <PixelCloud />
-        <PixelSpark $placement="left" />
-        <PixelSpark $placement="right" />
+        <PixelCloud className="cloud" />
+        <PixelSpark className="spark" $placement="left" />
+        <PixelSpark className="spark" $placement="right" />
+        <PixelSunDot className="sun-dot" />
         <PixelBattery />
         <PixelCorner />
         <PixelBody>
-          <PixelEye $side="left" />
-          <PixelEye $side="right" />
-          <PixelMouth />
+          <PixelEye className="pet-eye" $side="left" />
+          <PixelEye className="pet-eye" $side="right" />
+          <PixelMouth className="pet-mouth" />
         </PixelBody>
       </PixelPetVisual>
       <PetFace aria-hidden="true">{display.face}</PetFace>
@@ -90,6 +101,18 @@ export const getPetVisualState = (petState: PetState): PetVisualState => {
     return "low";
   }
 
+  if (petState.mood === "charged") {
+    return "charged";
+  }
+
+  if (petState.mood === "joyful") {
+    return "joyful";
+  }
+
+  if (petState.mood === "calm" || petState.accessory === "sun_dot") {
+    return "calm";
+  }
+
   return "okay";
 };
 
@@ -104,6 +127,27 @@ export const getPetDisplay = (petState: PetState): PetDisplayCopy => {
     return {
       face: "( ´・ω・)つ🍙",
       status: "小電量獸抱著飯糰"
+    };
+  }
+
+  if (petState.mood === "charged") {
+    return {
+      face: "(ﾉ´ヮ`)ﾉ*:･ﾟ✧",
+      status: "小電量獸把亮亮的電收好"
+    };
+  }
+
+  if (petState.mood === "joyful") {
+    return {
+      face: "( ´ ▽ ` )ﾉ",
+      status: "小電量獸小小揮手"
+    };
+  }
+
+  if (petState.mood === "calm") {
+    return {
+      face: "( ´･ᴗ･` )",
+      status: "小電量獸瞇眼曬太陽"
     };
   }
 
