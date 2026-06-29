@@ -1,5 +1,15 @@
+import { useState } from "react";
+
 import type { CompanionReply } from "../features/reply/replyTypes";
-import { PreviewLine, PreviewPanel, ReplyGroup } from "./CompanionReplyPreview.styles";
+import {
+  ActionButton,
+  ActionStage,
+  MicroBurst,
+  PetLift,
+  PreviewLine,
+  PreviewPanel,
+  ReplyGroup
+} from "./CompanionReplyPreview.styles";
 
 /**
  * CompanionReplyPreview 元件
@@ -27,8 +37,29 @@ function CompanionReplyPreview({ reply }: CompanionReplyPreviewProps) {
       <ReplyGroup>
         <h2>一件小事</h2>
         <PreviewLine>{reply.tinyAction}</PreviewLine>
+        <TinyActionInteraction key={`${reply.reply}|${reply.petLine}|${reply.tinyAction}`} />
       </ReplyGroup>
     </PreviewPanel>
+  );
+}
+
+function TinyActionInteraction() {
+  const [isActionDone, setIsActionDone] = useState(false);
+
+  return (
+    <ActionStage $isDone={isActionDone} data-action-state={isActionDone ? "done" : "idle"}>
+      <PetLift aria-hidden="true">小電量獸</PetLift>
+      {isActionDone ? (
+        <MicroBurst aria-hidden="true" data-testid="tiny-action-burst">
+          <span>♡</span>
+          <span>＋</span>
+          <span>✦</span>
+        </MicroBurst>
+      ) : null}
+      <ActionButton type="button" disabled={isActionDone} onClick={() => setIsActionDone(true)}>
+        {isActionDone ? "充了一小格電 ⚡" : "我做了！"}
+      </ActionButton>
+    </ActionStage>
   );
 }
 
