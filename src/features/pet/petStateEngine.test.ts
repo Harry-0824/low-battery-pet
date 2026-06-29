@@ -122,6 +122,86 @@ describe("calculatePetState", () => {
     });
   });
 
+  it("returns a charged pet state for full positive energy", () => {
+    expect(
+      calculatePetState(
+        createDerivedState({
+          mood: "bright",
+          energyLevel: "full"
+        })
+      )
+    ).toEqual({
+      mood: "charged",
+      animation: "bounce",
+      effect: "spark",
+      accessory: "none"
+    });
+  });
+
+  it("returns a joyful pet state for bright positive mood after higher priorities", () => {
+    expect(
+      calculatePetState(
+        createDerivedState({
+          mood: "bright",
+          energyLevel: "normal"
+        })
+      )
+    ).toEqual({
+      mood: "joyful",
+      animation: "bounce",
+      effect: "spark",
+      accessory: "none"
+    });
+  });
+
+  it("returns a calm pet state for content mood after higher priorities", () => {
+    expect(
+      calculatePetState(
+        createDerivedState({
+          mood: "content",
+          energyLevel: "normal"
+        })
+      )
+    ).toEqual({
+      mood: "calm",
+      animation: "sway",
+      effect: "warm_glow",
+      accessory: "sun_dot"
+    });
+  });
+
+  it("keeps low-priority positive states behind stress and wallet needs", () => {
+    expect(
+      calculatePetState(
+        createDerivedState({
+          mood: "bright",
+          energyLevel: "full",
+          stressLevel: "high",
+          hasWalletPressure: true
+        })
+      )
+    ).toEqual({
+      mood: "stressed",
+      animation: "shake",
+      effect: "black_cloud",
+      accessory: "none"
+    });
+
+    expect(
+      calculatePetState(
+        createDerivedState({
+          mood: "content",
+          hasWalletPressure: true
+        })
+      )
+    ).toEqual({
+      mood: "grumpy",
+      animation: "idle",
+      effect: "coins",
+      accessory: "coin"
+    });
+  });
+
   it("returns an idle pet state for the neutral baseline", () => {
     expect(calculatePetState(createDerivedState())).toEqual({
       mood: "idle",

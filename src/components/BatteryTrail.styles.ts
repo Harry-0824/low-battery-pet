@@ -13,6 +13,11 @@ import styled from "styled-components";
 import type { BatteryTrailEnergyLevel } from "../features/history/historyStorage";
 
 const trailColor = {
+  full: {
+    border: "#f4c95d",
+    background: "#fff8dc",
+    text: "#7c4a03"
+  },
   critical: {
     border: "#fca5a5",
     background: "#fee2e2",

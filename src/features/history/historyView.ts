@@ -8,6 +8,9 @@ import type { CheckInHistoryRecord } from "./historyTypes";
  */
 
 const moodSummary = {
+  energized: "有電",
+  joyful: "雀躍",
+  content: "平靜",
   okay: "還行",
   low_battery: "快沒電",
   annoyed: "很煩",
@@ -16,6 +19,9 @@ const moodSummary = {
 } satisfies Record<CheckInHistoryRecord["moodTag"], string>;
 
 const contextSummary = {
+  small_win: "小小完成",
+  rested_well: "有休息到",
+  connected: "有被連著",
   wallet_pressure: "錢包有壓力",
   work_stress: "工作太滿",
   social_fatigue: "社交疲勞",
@@ -24,6 +30,9 @@ const contextSummary = {
 } satisfies Record<CheckInHistoryRecord["contextTags"][number], string>;
 
 const petSummary = {
+  charged: "小電量獸充了一點電",
+  joyful: "小電量獸輕輕雀躍",
+  calm: "小電量獸安靜曬太陽",
   idle: "小電量獸待機中",
   low_power: "小電量獸快沒電了",
   stressed: "小電量獸頭上冒黑雲",

@@ -50,4 +50,45 @@ describe("deriveUserState", () => {
     expect(result.mood).toBe("overloaded");
     expect(result.energyLevel).toBe("low");
   });
+
+  it("maps energized to a full bright state without comfort needs", () => {
+    const result = deriveUserState({
+      moodTag: "energized",
+      contextTags: ["small_win", "connected"]
+    });
+
+    expect(result).toEqual({
+      mood: "bright",
+      energyLevel: "full",
+      stressLevel: "low",
+      needsComfort: false,
+      hasWalletPressure: false,
+      needsRest: false,
+      needsFoodSuggestion: false
+    });
+  });
+
+  it("keeps positive mood gentle when work stress is also selected", () => {
+    const result = deriveUserState({
+      moodTag: "joyful",
+      contextTags: ["work_stress"]
+    });
+
+    expect(result.mood).toBe("bright");
+    expect(result.energyLevel).toBe("normal");
+    expect(result.stressLevel).toBe("high");
+    expect(result.needsComfort).toBe(false);
+  });
+
+  it("maps content to a calm content state and keeps rest context", () => {
+    const result = deriveUserState({
+      moodTag: "content",
+      contextTags: ["rested_well", "want_to_rest"]
+    });
+
+    expect(result.mood).toBe("content");
+    expect(result.energyLevel).toBe("normal");
+    expect(result.stressLevel).toBe("low");
+    expect(result.needsRest).toBe(true);
+  });
 });

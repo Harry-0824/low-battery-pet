@@ -14,6 +14,24 @@ const moodStateMap: Record<
   MoodTag,
   Pick<DerivedUserState, "mood" | "energyLevel" | "stressLevel" | "needsComfort">
 > = {
+  energized: {
+    mood: "bright",
+    energyLevel: "full",
+    stressLevel: "low",
+    needsComfort: false
+  },
+  joyful: {
+    mood: "bright",
+    energyLevel: "normal",
+    stressLevel: "low",
+    needsComfort: false
+  },
+  content: {
+    mood: "content",
+    energyLevel: "normal",
+    stressLevel: "low",
+    needsComfort: false
+  },
   okay: {
     mood: "neutral",
     energyLevel: "normal",

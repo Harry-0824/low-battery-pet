@@ -4,6 +4,9 @@ import { calculatePetState } from "../pet/petStateEngine";
 import type { PetMoodState } from "../pet/petTypes";
 import type { CompanionReply, CompanionReplyInput, ReplyTone } from "./replyTypes";
 
+type ExistingMoodTag = Exclude<MoodTag, "energized" | "joyful" | "content">;
+type ExistingPetMoodState = Exclude<PetMoodState, "charged" | "joyful" | "calm">;
+
 /**
  * 陪伴回覆生成引擎
  *
@@ -16,7 +19,7 @@ import type { CompanionReply, CompanionReplyInput, ReplyTone } from "./replyType
 
 /** 心情對應的回覆模板庫 */
 const moodTemplates: Record<
-  MoodTag,
+  ExistingMoodTag,
   {
     replies: string[];
     tone: ReplyTone;
@@ -65,7 +68,8 @@ const moodTemplates: Record<
 };
 
 /** 寵物狀態對應的 petLine 模板庫 */
-const petLineTemplates: Record<PetMoodState, string[]> = {
+const petLineTemplates: Partial<Record<PetMoodState, string[]>> &
+  Record<ExistingPetMoodState, string[]> = {
   idle: [
     "我會待在旁邊，慢慢眨眼。",
     "我把尾巴圈起來，陪你小小休息。",
@@ -107,14 +111,16 @@ const petLineTemplates: Record<PetMoodState, string[]> = {
 export const generateCompanionReply = (input: CompanionReplyInput): CompanionReply => {
   const derivedUserState = deriveUserState(input);
   const petState = calculatePetState(derivedUserState);
-  const moodTemplate = moodTemplates[input.moodTag];
+  const moodTemplate =
+    moodTemplates[input.moodTag as ExistingMoodTag] ?? moodTemplates.okay;
+  const petLineTemplate = petLineTemplates[petState.mood] ?? petLineTemplates.idle;
   const note = input.shortText?.trim();
   const seedParts = [input.moodTag, ...input.contextTags, note ?? ""];
   const contextAwareReply = composeContextAwareReply(input);
 
   return {
     reply: contextAwareReply ?? selectVariant(moodTemplate.replies, seedParts),
-    petLine: selectVariant(petLineTemplates[petState.mood], [
+    petLine: selectVariant(petLineTemplate, [
       petState.mood,
       ...seedParts
     ]),

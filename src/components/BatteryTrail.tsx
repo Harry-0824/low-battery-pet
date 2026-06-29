@@ -15,6 +15,10 @@ import {
  * 依能量等級顯示不同顏色和標語的空氣品質圖樣式元件。
  */
 const batteryTrailCopy = {
+  full: {
+    label: "有電",
+    title: "今天小電量獸有亮一點"
+  },
   critical: {
     label: "快沒電",
     title: "那天很低電量"

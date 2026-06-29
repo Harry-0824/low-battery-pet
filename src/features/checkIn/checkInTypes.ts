@@ -15,6 +15,9 @@
  * - no_thoughts: 腦袋空白，不知道該怎麼辦
  */
 export type MoodTag =
+  | "energized"
+  | "joyful"
+  | "content"
   | "okay"
   | "low_battery"
   | "annoyed"
@@ -27,6 +30,9 @@ export type MoodTag =
  * 可複選，用來進一步推導使用者的壓力來源和需求
  */
 export type ContextTag =
+  | "small_win"
+  | "rested_well"
+  | "connected"
   | "wallet_pressure"
   | "work_stress"
   | "social_fatigue"
@@ -34,10 +40,17 @@ export type ContextTag =
   | "want_to_rest";
 
 /** 根據心情標籤推導出的使用者內在情緒 */
-export type UserMood = "neutral" | "tired" | "angry" | "lonely" | "overloaded";
+export type UserMood =
+  | "bright"
+  | "content"
+  | "neutral"
+  | "tired"
+  | "angry"
+  | "lonely"
+  | "overloaded";
 
 /** 使用者的能量等級 */
-export type EnergyLevel = "normal" | "low" | "critical";
+export type EnergyLevel = "full" | "normal" | "low" | "critical";
 
 /** 使用者的壓力等級 */
 export type StressLevel = "low" | "medium" | "high";
